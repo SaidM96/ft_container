@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 09:06:48 by smia              #+#    #+#             */
-/*   Updated: 2022/11/18 03:54:11 by smia             ###   ########.fr       */
+/*   Updated: 2022/11/18 04:43:01 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,20 @@ class vector
 			}
 			void assign( size_type count, const T& value )
 			{
+				clear();
+				reserve(count);
+				for (size_type i = 0; i < count; i++)
+					push_back(value);
+			}
+			void assign( InputIt first, InputIt last , typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type* = NULL)
+			{
+				difference_type diff = ft::distance(first, last);
+				clear();
+				reserve(static_cast<size_type>(diff));
+				for (size_type i = 0; i < count; i++)
+				{
+					/* code */
+				}
 				
 			}
 			// Returns the allocator associated with the container
@@ -128,14 +142,20 @@ class vector
 			size_type size() const {return _size;}
 			size_type max_size() const {return (_alloc.max_size());}
 			size_type capacity() const {return _capacity;}
-			void reserve( size_type new_cap )
+			void reserve(size_type new_cap )
 			{
-				if (_capacity == 0)
+				if (_capacity == 0 && _size == 0)
 				{
 					_data = _allocate(new_cap);
 					_capacity = new_cap;
-				}	
-				else if (new_cap > _capacity)
+				}
+				if (new_cap > _capacity && _size == 0)
+				{
+					_alloc.deallocate(_data + _capacity)
+					_data = _allocate(new_cap);
+					_capacity = new_cap;
+				}
+				else if (new_cap > _capacity && _size >= 1)
 				{
 					pointer hold;
 					for (size_type i = 0; i < _size; i++)
@@ -182,7 +202,7 @@ class vector
 			
 			iterator insert(const_iterator pos, const T& value )
 			{
-					
+				
 			}
 			iterator erase( iterator pos )
 			{
