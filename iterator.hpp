@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 13:32:08 by smia              #+#    #+#             */
-/*   Updated: 2022/11/12 20:46:52 by smia             ###   ########.fr       */
+/*   Updated: 2022/11/18 01:08:39 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,56 +15,35 @@
 #define ITERATOR_HPP
 
 #include <iostream>
-
+#include "is_integral.hpp"
 
 namespace ft
 {
-  // &&&&&&&&&&&&&&&&&&&&&&& iterator
-  template <class Category, class T, class Distance = ptrdiff_t,
-            class Pointer = T*, class Reference = T&>
-    class iterator
-    {
+  // &&&&&&&&&&&&&&&&&&&&&&& iterator traits
+
+    template <class Iterator> class iterator_traits {
       public:
-          typedef T         value_type;
-          typedef Distance  difference_type;
-          typedef Pointer   pointer;
-          typedef Reference reference;
-          typedef Category  iterator_category;
+        typedef typename Iterator::difference_type		difference_type;
+        typedef typename Iterator::value_type			value_type;
+        typedef typename Iterator::pointer				pointer;
+        typedef typename Iterator::reference			reference;
+        typedef typename Iterator::iterator_category	iterator_category;
     };
-
-    // &&&&&&&&&&&&&&&&&&&&&&& iterator traits
-
-    template <class T>
-    class iterator_traits
-    {
+    template <class T> class iterator_traits<T *> {
       public:
-        			typedef typename Iterator::difference_type		difference_type;
-			        typedef typename Iterator::value_type			value_type;
-			        typedef typename Iterator::pointer				pointer;
-			        typedef typename Iterator::reference			reference;
-			        typedef typename Iterator::iterator_category	iterator_category;  
+        typedef std::ptrdiff_t					diffrence_type;
+        typedef T								value_type;
+        typedef T*								pointer;
+        typedef T&								reference;
+        typedef std::random_access_iterator_tag	iterator_category;
     };
-
-    template <class T>
-    class iterator_traits<T *>
-    {
+    template <class T> class iterator_traits<const T *> {
       public:
-        		typedef std::ptrdiff_t					diffrence_type;
-            typedef T								value_type;
-            typedef T*								pointer;
-            typedef T&								reference;
-            typedef std::random_access_iterator_tag	    iterator_category;
-    };
-
-    template <class T>
-    class iterator_traits<const T *>
-    {
-      public:
-        		typedef std::ptrdiff_t					diffrence_type;
-            typedef T								value_type;
-            typedef const T*								pointer;
-            typedef const T&								reference;
-            typedef std::random_access_iterator_tag	    iterator_category;
+        typedef std::ptrdiff_t					diffrence_type;
+        typedef T								value_type;
+        typedef const T*						pointer;
+        typedef const T&						reference;
+        typedef std::random_access_iterator_tag	iterator_category;
     };
 
     // &&&&&&&&&&&&&&&&&&&&&&& reverse_iterator
@@ -147,6 +126,17 @@ class random_access_iterator
         T&  operator-=(int n){return (this->_ptr - n);}
         T&  operator[](unsigned int n){return (T[n]);}
 };
+
+
+// std::disctance
+template< class InputIt >
+typename iterator_traits<InputIt>::difference_type distance( InputIt first, InputIt last )
+{
+	typename iterator_traits<InputIt>::difference_type dis = 0;
+	while(first != last)
+		dis++;
+  return dis;
+}
 
 //  Bidirectional iterator
 

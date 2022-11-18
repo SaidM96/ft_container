@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/11 22:42:12 by smia              #+#    #+#             */
-/*   Updated: 2022/11/12 23:50:45 by smia             ###   ########.fr       */
+/*   Updated: 2022/11/17 21:06:39 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,6 @@ template< class T1, class T2 >
 bool operator>=( const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs ){return !(lhs < rhs);}
 template< class T1, class T2 >
 bool operator<=( const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs ){return !(lhs > rhs);}
-
-// enable if
-template<bool B, class T = void> struct enable_if {};
-template<class T> struct enable_if<true, T> { typedef T type; };
 
 
 }
