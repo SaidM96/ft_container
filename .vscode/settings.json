@@ -63,6 +63,7 @@
         "system_error": "cpp",
         "tuple": "cpp",
         "typeinfo": "cpp",
-        "i": "cpp"
+        "i": "cpp",
+        "aa": "cpp"
     }
 }
