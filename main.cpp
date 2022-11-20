@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 23:38:32 by smia              #+#    #+#             */
-/*   Updated: 2022/11/20 02:51:00 by smia             ###   ########.fr       */
+/*   Updated: 2022/11/20 15:32:59 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,22 +19,22 @@
 using std::cout;
 
 int main(){
-  {
-    ft::vector<std::string> array;
-    std::string x = "a";
-    for (int i = 0; i < 100; i++)
-    {
-      x = x + "a";
-      std::cout << x << "\n";
-      array.push_back(x);
-    }
-    std::cout << array.size() << "\n";
-    for (int i = 0; i < 100; i++)
-    {
-      std::cout << array[i] << "\n";
-    }
-    puts("-----------------------------------------------------");
-  }
+  // {
+  //   ft::vector<std::string> array;
+  //   std::string x = "a";
+  //   for (int i = 0; i < 100; i++)
+  //   {
+  //     x = x + "a";
+  //     std::cout << x << "\n";
+  //     array.push_back(x);
+  //   }
+  //   std::cout << array.size() << "\n";
+  //   for (int i = 0; i < 100; i++)
+  //   {
+  //     std::cout << array[i] << "\n";
+  //   }
+  //   puts("-----------------------------------------------------");
+  // }
   {
     ft::vector<int> array;
     cout << "vector() default constructor :: pass\n";
@@ -338,7 +338,7 @@ int main(){
     ft::vector<char> a;
     ft::vector<int> b;
     ft::vector<std::string> c;
-    assert(a.max_size() == std::allocator<char>().max_size() / 2);
+    assert(a.max_size() == std::allocator<char>().max_size());
     assert(b.max_size() == std::allocator<int>().max_size());
     assert(c.max_size() == std::allocator<std::string>().max_size());
     std::cout << "testing max_size() method :: pass\n";
@@ -348,10 +348,13 @@ int main(){
     vec.push_back(1);
     vec.push_back(2);
     vec.push_back(3);
+      
     ft::vector<int> vec2(vec.begin(), vec.end());
+    
     assert(vec[0] == vec2[0]);
     assert(vec[1] == vec2[1]);
     assert(vec[2] == vec2[2]);
+    
   }
   {
     std::list<int> lst;
@@ -365,7 +368,7 @@ int main(){
     lst.pop_back();
     assert(lst.back() == vec2[0]);
     std::cout << "testing range constructor :: pass\n";
-  }
+  } 
   {
     ft::vector<std::string> vec;
     assert(vec.begin() == NULL);

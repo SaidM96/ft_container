@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 09:06:48 by smia              #+#    #+#             */
-/*   Updated: 2022/11/20 03:09:29 by smia             ###   ########.fr       */
+/*   Updated: 2022/11/20 15:38:06 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,15 +52,14 @@ class vector
 			template< class InputIt >
 			vector(InputIt first, InputIt last, const Allocator& alloc = Allocator(), typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type* = NULL)
 			{
-				size_type		size =  static_cast<size_type>(last - first);
+				size_type		size =  static_cast<size_type>(ft::distance(first, last));
 				_size = size;
 				_capacity = size;
 				_alloc = alloc;
 				_data = _alloc.allocate(size);
-				for (size_type i = 0; i < _size; i++)
+				for (size_type i = 0; first != last; first++, i++)
 				{
 					_alloc.construct(_data + i, *first);
-					first++;	
 				}
 			}
 			// destructor
@@ -101,13 +100,13 @@ class vector
 
 			// iterators
 				// begin
-			iterator  begin(){return(iterator(_data));}
-			const_iterator begin() const {return (const_iterator(_data));}
+			iterator  begin(){return(iterator(this->_data));}
+			const_iterator begin() const {return (const_iterator(this->_data));}
 			reverse_iterator rbegin(){return (reverse_iterator(end()));}
 			const_reverse_iterator rbegin() const {return (const_reverse_iterator(end()));}
 				// end
-			iterator end() {return (iterator(_data + _size));}
-			const_iterator end() const {return (const_iterator(_data + _size));}
+			iterator end() {return (iterator(this->_data + this->_size));}
+			const_iterator end() const {return (const_iterator(this->_data + this->_size));}
 			reverse_iterator rend(){return (reverse_iterator(begin()));}
 			const_reverse_iterator rend() const {return (const_reverse_iterator(begin()));}
 			
@@ -132,14 +131,14 @@ class vector
 					_data = _alloc.allocate(new_cap);
 					_capacity = new_cap;
 				}
-				if (new_cap > CapacityHold && _size == 0)
+				else if (new_cap > CapacityHold && _size == 0)
 				{
 					
 					_alloc.deallocate(_data, CapacityHold);
 					_data = _alloc.allocate(new_cap);
 					_capacity = new_cap;
 				}
-				if (new_cap > CapacityHold && _size >= 1)
+				else if (new_cap > CapacityHold && _size >= 1)
 				{
 					pointer hold;
 					
@@ -165,8 +164,8 @@ class vector
 			void push_back( const T& value )
 			{
 				if (_capacity == 0)
-					reserve(2);
-				if (_size + 1 > _capacity)
+					reserve(1);
+				else if (_size + 1 > _capacity)
 				{
 					_capacity *= 2;
 					reserve(_capacity);
@@ -191,7 +190,6 @@ class vector
 				for (size_type i = 0; i < count; i++)
 					push_back(value);
 			}
-			
 			template<class InputIt>
 			void assign(InputIt first, InputIt last , typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type* = NULL)
 			{
@@ -238,12 +236,10 @@ class vector
 					vector<T> tmp;
 					tmp.assign(pos, end());
 					erase(pos, end());
-					InputIt it = first;
-					for (; it != last; it++)
-						push_back(*it);
-					it = tmp.begin();
-					for (; it != tmp.end(); it++)
-						push_back(*it);
+					for (; first != last; first++)
+						push_back(*first);
+					for (int i = 0; i < tmp.size(); i++)
+						push_back(tmp[i]);
 					return (begin() + position);
 			}
 			
@@ -327,9 +323,9 @@ class vector
 			}
 			reference operator[]( size_type pos ){return at(pos);}
 			const_reference operator[]( size_type pos ) const {return at(pos);}
-			reference front() {at(0);}
+			reference front() {return at(0);}
 			const_reference front() const {return at(0);}
-			reference back() {at(_size - 1);}
+			reference back() {return at(_size - 1);}
 			const_reference back() const {return at(_size - 1);}
 			T* data() {return _data;}
 			const T* data() const {return _data;}
@@ -353,7 +349,7 @@ class vector
 		return true;
 	}
 
-	template< class T, class Alloc> bool operator!=( const ft::vector<T,Alloc>& lhs,const ft::vector<T,Alloc>& rhs ) 
+	template< class T, class Alloc > bool operator!=( const ft::vector<T,Alloc>& lhs,const ft::vector<T,Alloc>& rhs ) 
 	{
 		return (!(lhs == rhs));
 	}
