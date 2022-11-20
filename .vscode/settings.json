@@ -64,6 +64,8 @@
         "tuple": "cpp",
         "typeinfo": "cpp",
         "i": "cpp",
-        "aa": "cpp"
+        "aa": "cpp",
+        "__cxx_version": "cpp",
+        "list": "cpp"
     }
 }

@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 09:06:48 by smia              #+#    #+#             */
-/*   Updated: 2022/11/19 05:03:13 by smia             ###   ########.fr       */
+/*   Updated: 2022/11/20 03:09:29 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ class vector
             typedef typename Allocator::pointer                     pointer;
             typedef typename Allocator::const_pointer               const_pointer;
             typedef ft::random_access_iterator<value_type>			iterator;
-			typedef ft::random_access_iterator<const value_type>	const_iterator;
+			typedef ft::random_access_iterator<value_type const>	const_iterator;
 			typedef ft::reverse_iterator<iterator>					reverse_iterator;
 			typedef ft::reverse_iterator<const_iterator>			const_reverse_iterator;
 
@@ -83,7 +83,8 @@ class vector
 			{
 				for (size_type i = 0; i < _size; i++)
 					_alloc.destroy(_data + i);
-				_alloc.deallocate(_data, _capacity);
+				if (_capacity)
+					_alloc.deallocate(_data, _capacity);
 				_size = other._size;
 				_capacity = other._capacity;
 				_data = _alloc.allocate(_capacity);
@@ -122,32 +123,34 @@ class vector
 			size_type capacity() const {return _capacity;}
 			void reserve(size_type new_cap )
 			{
-				if (_capacity == 0 && _size == 0)
+				size_type CapacityHold = _capacity;
+				if (new_cap > max_size())
+					throw std::length_error("The size requested is greater than the maximum size!");
+				if (CapacityHold == 0 && _size == 0)
 				{
+					
 					_data = _alloc.allocate(new_cap);
 					_capacity = new_cap;
-					return ;
 				}
-				if (new_cap > _capacity && _size == 0)
+				if (new_cap > CapacityHold && _size == 0)
 				{
-					_alloc.deallocate(_data, _capacity);
+					
+					_alloc.deallocate(_data, CapacityHold);
 					_data = _alloc.allocate(new_cap);
 					_capacity = new_cap;
-					return ;
 				}
-				if (new_cap > _capacity && _size >= 1)
+				if (new_cap > CapacityHold && _size >= 1)
 				{
 					pointer hold;
+					
+					hold = _alloc.allocate(new_cap);
 					for (size_type i = 0; i < _size; i++)
-						*(hold + i) = *(_data + _size);
+						_alloc.construct(hold + i, _data[i]);
 					for (size_type i = 0; i < _size; i++)
 						_alloc.destroy(_data + i);
-					_alloc.deallocate(_data, _capacity);
-					_data = _alloc.allocate(new_cap);
+					_alloc.deallocate(_data, CapacityHold);
+					_data = hold;
 					_capacity = new_cap;
-					for (size_type i = 0; i < _size; i++)
-						_alloc.construct(_data + i, *(hold + i));
-					return ;
 				}
 			}
 			
@@ -201,7 +204,7 @@ class vector
 					push_back(*it);
 			}
 			
-			iterator insert(const_iterator pos, const T& value )
+			iterator insert(iterator pos, const T& value )
 			{
 				size_type  position = static_cast<size_type>(ft::distance(begin(), pos));
 				vector<T> tmp;
@@ -214,7 +217,7 @@ class vector
 				return (begin() + position);
 			}
 			
-			iterator insert( const_iterator pos, size_type count, const T& value )
+			iterator insert( iterator pos, size_type count, const T& value )
 			{
 					size_type  position = static_cast<size_type>(ft::distance(begin(), pos));
 					vector<T> tmp;
@@ -229,7 +232,7 @@ class vector
 			}
 
 			template< class InputIt > 
-			iterator insert( const_iterator pos, InputIt first, InputIt last , typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type* = NULL)
+			iterator insert( iterator pos, InputIt first, InputIt last , typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type* = NULL)
 			{
 					size_type  position = static_cast<size_type>(ft::distance(begin(), pos));
 					vector<T> tmp;
@@ -286,6 +289,8 @@ class vector
 			{
 				size_type hold = _size;
 				
+				if (count > max_size())
+					throw std::length_error("The capacity required exceeds max_size()");
 				if (hold < count)
 					while(_size < count)
 						push_back(value);
@@ -338,9 +343,9 @@ class vector
 	// operator==,!=,<,<=,>,>=,<=>
 	template< class T, class Alloc> bool operator==( const ft::vector<T,Alloc>& lhs,const ft::vector<T,Alloc>& rhs )
 	{
-		if (lhs._size != rhs._size)
+		if (lhs.size() != rhs.size())
 			return false;
-		for (typename ft::vector<T>::size_type i = 0; i < lhs._size; i++)
+		for (typename ft::vector<T>::size_type i = 0; i < lhs.size(); i++)
 		{
 			if (lhs[i] != rhs[i])
 				return false;
@@ -355,14 +360,14 @@ class vector
 
 	template< class T, class Alloc > bool operator<( const ft::vector<T,Alloc>& lhs,const ft::vector<T,Alloc>& rhs ) 
 	{
-		if (!(lhs._size < rhs._size))
+		if (!(lhs.size() < rhs.size()))
 			return false;
 		return (lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
 	}
 
 	template< class T, class Alloc > bool operator>( const ft::vector<T,Alloc>& lhs,const ft::vector<T,Alloc>& rhs ) 
 	{
-		if (lhs._size <= rhs._size)
+		if (lhs.size() <= rhs.size())
 			return false;
 		return (!lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
 	}
