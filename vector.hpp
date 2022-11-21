@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 09:06:48 by smia              #+#    #+#             */
-/*   Updated: 2022/11/20 15:38:06 by smia             ###   ########.fr       */
+/*   Updated: 2022/11/21 18:43:38 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,13 +142,18 @@ class vector
 				{
 					pointer hold;
 					
-					hold = _alloc.allocate(new_cap);
+					hold = _alloc.allocate(CapacityHold);
 					for (size_type i = 0; i < _size; i++)
 						_alloc.construct(hold + i, _data[i]);
 					for (size_type i = 0; i < _size; i++)
 						_alloc.destroy(_data + i);
 					_alloc.deallocate(_data, CapacityHold);
-					_data = hold;
+					_data = _alloc.allocate(new_cap);
+					for (size_type i = 0; i < _size; i++)
+						_alloc.construct(_data + i, *(hold + i));
+					for (size_type i = 0; i < _size; i++)
+						_alloc.destroy(hold + i);
+					_alloc.deallocate(hold,CapacityHold);
 					_capacity = new_cap;
 				}
 			}
@@ -164,7 +169,7 @@ class vector
 			void push_back( const T& value )
 			{
 				if (_capacity == 0)
-					reserve(1);
+					reserve(2);
 				else if (_size + 1 > _capacity)
 				{
 					_capacity *= 2;
@@ -178,7 +183,7 @@ class vector
 			{
 				if (_size >= 1)
 				{
-					_alloc.destroy(_data + _size);
+					_alloc.destroy(_data + _size - 1);
 					_size--;
 				}
 			}
@@ -186,7 +191,8 @@ class vector
 			void assign( size_type count, const T& value )
 			{
 				clear();
-				reserve(count);
+				if (_capacity < count)
+					reserve(count);
 				for (size_type i = 0; i < count; i++)
 					push_back(value);
 			}
@@ -196,9 +202,7 @@ class vector
 				size_type diff = static_cast<size_type>(ft::distance(first, last));
 				clear();
 				reserve(diff);
-				InputIt it;
-				it = first;
-				for (; it != last ; it++)
+				for (InputIt it = begin(); it != last ; it++)
 					push_back(*it);
 			}
 			
@@ -209,8 +213,7 @@ class vector
 				tmp.assign(pos, end());
 				erase(pos , end());
 				push_back(value);
-				iterator it = tmp.begin();
-				for (; it != tmp.end(); it++)
+				for (iterator it = tmp.begin(); it != tmp.end(); it++)
 					push_back(*it);
 				return (begin() + position);
 			}
@@ -218,13 +221,14 @@ class vector
 			iterator insert( iterator pos, size_type count, const T& value )
 			{
 					size_type  position = static_cast<size_type>(ft::distance(begin(), pos));
-					vector<T> tmp;
+					vector tmp;
+					std::cout << "sa" << std::endl;
 					tmp.assign(pos, end());
+
 					erase(pos, end());
 					for (size_type i = 0; i < count; i++)
 						push_back(value);
-					iterator it = tmp.begin();
-					for (; it != tmp.end(); it++)
+					for (iterator it = tmp.begin(); it != tmp.end(); it++)
 						push_back(*it);
 					return (begin() + position);
 			}
@@ -233,7 +237,7 @@ class vector
 			iterator insert( iterator pos, InputIt first, InputIt last , typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type* = NULL)
 			{
 					size_type  position = static_cast<size_type>(ft::distance(begin(), pos));
-					vector<T> tmp;
+					vector tmp;
 					tmp.assign(pos, end());
 					erase(pos, end());
 					for (; first != last; first++)
@@ -266,15 +270,16 @@ class vector
 				size_type start = static_cast<size_type>(ft::distance(begin(), first));
 				if (diff == 0)
 					return last;
-				size_type i = start;
-				while (i++ < diff)
-					_alloc.destroy(_data + i);
-				if (end() == (begin() + i))
-					return end();
-				for (; last != end(); last++)
+				while (start <= start + diff && start + diff != _size)
 				{
-					_alloc.construct(_data + start, *last);
+					_alloc.destroy(_data + start);
+					start++;
+				}
+				while (last != end())
+				{
+					_alloc.construct(&(*first), *last);
 					_alloc.destroy(&(*last));
+					last++;
 					start++;
 				}
 				_size -= diff;
@@ -296,16 +301,9 @@ class vector
 			}
 			void swap( vector& other )
 			{
-				size_type SizeTmp = _size;
-				_size = other._size;
-				other._size = SizeTmp;
-				SizeTmp = _capacity;
-				_capacity = other._capacity;
-				other._capacity = SizeTmp;
-				
-				pointer ptr = _data;
-				_data = other._data;
-				other._data = ptr;
+				vector tmp(*this);
+				*this = other;
+				other = tmp; 
 			}
 
 			// Element access
@@ -368,6 +366,12 @@ class vector
 		return (!lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
 	}
 
+	template< class T, class Alloc > void swap( ft::vector<T,Alloc>& lhs, ft::vector<T,Alloc>& rhs )
+	{
+		ft::vector<T, Alloc> tmp(lhs);
+		lhs = rhs;
+		rhs = tmp;
+	}
 	template< class T, class Alloc > bool operator<=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) {return (!(lhs > rhs));}
 	template< class T, class Alloc > bool operator>=( const ft::vector<T,Alloc>& lhs,const ft::vector<T,Alloc>& rhs ){ return (!(lhs < rhs));}
 };
