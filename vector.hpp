@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 09:06:48 by smia              #+#    #+#             */
-/*   Updated: 2022/11/23 18:58:59 by smia             ###   ########.fr       */
+/*   Updated: 2022/11/23 20:32:16 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,9 +173,9 @@ class vector
 			{
 				if (_capacity == 0)
 					reserve(1);
-				else if (_size + 1 > _capacity)	
+				else if (_size + 1 > _capacity)
 				{
-					reserve(_size * 2);
+					reserve(_capacity * 2);
 				}
 				_alloc.construct(_data + _size, value);
 				_size++;
@@ -314,52 +314,70 @@ class vector
 				size_type lenght = static_cast<size_type>(std::distance(first, last));
 				if (!lenght)
 					return last;
-				pointer hold1 = _alloc.allocate(start);
 				size_type count1 = 0;
-				iterator it = begin();
-				while (it != first)
+				pointer hold1;
+				if (start)
 				{
-					_alloc.construct(hold1 + count1, *it);
-					it++;
-					count1++;
+					hold1 = _alloc.allocate(start);
+					
+					iterator it = begin();
+					while (it != first)
+					{
+						_alloc.construct(hold1 + count1, *it);
+						it++;
+						count1++;
+					}
 				}
-				pointer hold2 = _alloc.allocate(lenght);
+				pointer hold2;
 				size_type count2 = 0;
-				it = last;
-				while(it != end())
+				if (lenght)
 				{
-					_alloc.construct(hold2 + count2, *it);
-					it++;
-					count2++;
+					hold2 = _alloc.allocate(lenght);
+					iterator it = last;
+					while(it != end())
+					{
+						_alloc.construct(hold2 + count2, *it);
+						it++;
+						count2++;
+					}	
 				}
 				clear();
-				for (size_type i = 0; i < count1; i++)
+				if (start)
 				{
-					push_back(*(hold1 + i));
-					_alloc.destroy(hold1 + i);
+					for (size_type i = 0; i < count1; i++)
+					{
+						push_back(*(hold1 + i));
+						_alloc.destroy(hold1 + i);
+					}
+					_alloc.deallocate(hold1, start);	
 				}
-				_alloc.deallocate(hold1, start);
-				for (size_type i = 0; i < count2; i++)
+				if (lenght)
 				{
-					push_back(*(hold2 + i));
-					_alloc.destroy(hold2 + i);
+					for (size_type i = 0; i < count2; i++)
+					{
+						push_back(*(hold2 + i));
+						_alloc.destroy(hold2 + i);
+					}
+					_alloc.deallocate(hold2, lenght);
 				}
-				_alloc.deallocate(hold2, lenght);
 				return (iterator(_data + start));
 			}
 
 			void resize(size_type count, T value = T())
 			{
-				size_type hold = _size;
+				size_type sizeHold = _size;
+				size_type capacityHold = _capacity;
 				
 				if (count > max_size())
 					throw std::length_error("The capacity required exceeds max_size()");
-				if (count > _capacity)
+				if (count > capacityHold && count <= capacityHold * 2)
+					reserve(capacityHold * 2);
+				if (count >= capacityHold && count > capacityHold * 2)
 					reserve(count);
-				if (hold < count)
+				if (sizeHold < count)
 					while(_size < count)
 						push_back(value);
-				if (hold > count)
+				if (sizeHold > count)
 					while(_size > count)
 						pop_back();
 			}
@@ -367,24 +385,24 @@ class vector
 			{
 				vector tmp(*this);
 				*this = other;
-				other = tmp; 
+				other = tmp;
 			}
 
 			// Element access
 			reference at( size_type pos )
 			{
-				if (pos >= _size)
-					throw  std::out_of_range("The element required is not within the range");
+				if (pos < 0 || pos >= _size)
+					throw std::out_of_range("vector");
 				return _data[pos];
 			}
 			const_reference at( size_type pos ) const
 			{
-				if (pos >= _size)
-					throw  std::out_of_range("The element required is not within the range");
+				if (pos < 0 || pos >= _size)
+					throw std::out_of_range("vector");
 				return _data[pos];
 			}
-			reference operator[]( size_type pos ){return at(pos);}
-			const_reference operator[]( size_type pos ) const {return at(pos);}
+			reference operator[]( size_type pos ){return _data[pos];}
+			const_reference operator[]( size_type pos ) const {return _data[pos];}
 			reference front() {return at(0);}
 			const_reference front() const {return at(0);}
 			reference back() {return at(_size - 1);}
