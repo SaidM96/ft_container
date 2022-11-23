@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 23:38:32 by smia              #+#    #+#             */
-/*   Updated: 2022/11/21 12:05:52 by smia             ###   ########.fr       */
+/*   Updated: 2022/11/22 12:50:20 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -528,7 +528,6 @@ int main(){
     x.push_back(3);
     ft::vector<int>::const_iterator b = x.begin();
     ft::vector<int>::const_iterator e = x.end();
-        std::cout <<"wiwiw" << std::endl;
     for (size_t i = 0; i < x.size(); ++i) {
       assert(b[i] == x[i]);
     }

@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 09:06:48 by smia              #+#    #+#             */
-/*   Updated: 2022/11/21 18:43:38 by smia             ###   ########.fr       */
+/*   Updated: 2022/11/23 18:58:59 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,8 @@ class vector
 				_alloc = alloc;
 				_size = count;
 				_capacity = count;
-				_data = _alloc.allocate(count);
+				if (count)
+					_data = _alloc.allocate(count);
 				for (size_type i = 0; i < count; i++)
 					_alloc.construct(_data + i, value);
 			}
@@ -52,22 +53,20 @@ class vector
 			template< class InputIt >
 			vector(InputIt first, InputIt last, const Allocator& alloc = Allocator(), typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type* = NULL)
 			{
-				size_type		size =  static_cast<size_type>(ft::distance(first, last));
+				size_type		size =  static_cast<size_type>(std::distance(first, last));
 				_size = size;
 				_capacity = size;
 				_alloc = alloc;
 				_data = _alloc.allocate(size);
 				for (size_type i = 0; first != last; first++, i++)
-				{
 					_alloc.construct(_data + i, *first);
-				}
 			}
 			// destructor
 			~vector()
 			{
 				for (size_type i = 0; i < _size; i++)
 					_alloc.destroy(_data + i);
-				if (_capacity)
+				if (_capacity)	
 					_alloc.deallocate(_data, _capacity);
 			}
 			// copy constructor
@@ -127,7 +126,6 @@ class vector
 					throw std::length_error("The size requested is greater than the maximum size!");
 				if (CapacityHold == 0 && _size == 0)
 				{
-					
 					_data = _alloc.allocate(new_cap);
 					_capacity = new_cap;
 				}
@@ -140,6 +138,11 @@ class vector
 				}
 				else if (new_cap > CapacityHold && _size >= 1)
 				{
+					// vector<value_type> tmp(*this);
+					// clear();
+					// reserve(new_cap);
+					// assign(tmp.begin(), tmp.end());
+					//
 					pointer hold;
 					
 					hold = _alloc.allocate(CapacityHold);
@@ -169,14 +172,13 @@ class vector
 			void push_back( const T& value )
 			{
 				if (_capacity == 0)
-					reserve(2);
-				else if (_size + 1 > _capacity)
+					reserve(1);
+				else if (_size + 1 > _capacity)	
 				{
-					_capacity *= 2;
-					reserve(_capacity);
+					reserve(_size * 2);
 				}
 				_alloc.construct(_data + _size, value);
-				_size++;	
+				_size++;
 			}
 			
 			void pop_back()
@@ -199,91 +201,151 @@ class vector
 			template<class InputIt>
 			void assign(InputIt first, InputIt last , typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type* = NULL)
 			{
-				size_type diff = static_cast<size_type>(ft::distance(first, last));
-				clear();
-				reserve(diff);
-				for (InputIt it = begin(); it != last ; it++)
-					push_back(*it);
+				size_type diff = static_cast<size_type>(std::distance(first, last));
+				clear();   
+				if (_size + diff > _capacity)
+					reserve(diff);
+				while(first != last)
+				{
+					push_back(*first);
+					++first;
+				}
 			}
 			
 			iterator insert(iterator pos, const T& value )
 			{
-				size_type  position = static_cast<size_type>(ft::distance(begin(), pos));
-				vector<T> tmp;
-				tmp.assign(pos, end());
-				erase(pos , end());
+				size_type  BeginPos = static_cast<size_type>(std::distance(begin(), pos));
+				size_type  PosEnd = static_cast<size_type>(std::distance(pos, end()));
+				
+				pointer hold = _alloc.allocate(_size - BeginPos);
+				iterator it = pos;
+				for (size_type i = 0; i < PosEnd; i++)
+				{
+					_alloc.construct(hold + i, *it);
+					++it;
+				}
+				erase(pos, end());
 				push_back(value);
-				for (iterator it = tmp.begin(); it != tmp.end(); it++)
-					push_back(*it);
-				return (begin() + position);
+				for (size_type i = 0; i < PosEnd; i++)
+				{
+					push_back(*(hold + i));
+					_alloc.destroy(hold + i);
+				}
+				_alloc.deallocate(hold, PosEnd);
+				return (begin() + BeginPos);
 			}
-			
+
 			iterator insert( iterator pos, size_type count, const T& value )
 			{
-					size_type  position = static_cast<size_type>(ft::distance(begin(), pos));
-					vector tmp;
-					std::cout << "sa" << std::endl;
-					tmp.assign(pos, end());
+				size_type  BeginPos = static_cast<size_type>(std::distance(begin(), pos));
+				size_type  PosEnd = static_cast<size_type>(std::distance(pos, end()));
 
-					erase(pos, end());
-					for (size_type i = 0; i < count; i++)
-						push_back(value);
-					for (iterator it = tmp.begin(); it != tmp.end(); it++)
-						push_back(*it);
-					return (begin() + position);
+				pointer hold = _alloc.allocate(_size - BeginPos);
+				iterator it = pos;
+				for (size_type i = 0; i < PosEnd; i++)
+				{
+					_alloc.construct(hold + i, *it);
+					++it;
+				}
+				erase(pos, end());
+				for (size_t i = 0; i < count; i++)
+					push_back(value);
+				for (size_type i = 0; i < PosEnd; i++)
+				{
+					push_back(*(hold + i));
+					_alloc.destroy(hold + i);
+				}
+				_alloc.deallocate(hold, PosEnd);
+				return (begin() + BeginPos);
 			}
 
 			template< class InputIt > 
 			iterator insert( iterator pos, InputIt first, InputIt last , typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type* = NULL)
 			{
-					size_type  position = static_cast<size_type>(ft::distance(begin(), pos));
-					vector tmp;
-					tmp.assign(pos, end());
-					erase(pos, end());
-					for (; first != last; first++)
-						push_back(*first);
-					for (int i = 0; i < tmp.size(); i++)
-						push_back(tmp[i]);
-					return (begin() + position);
+
+				size_type  p1 = static_cast<size_type>(std::distance(begin(), pos));
+				size_type  p2 = static_cast<size_type>(std::distance(pos, end()));
+				size_type  p3 = static_cast<size_type>(std::distance(first, last));
+				if (!p3)
+					return (begin());
+				reserve(_size + p3);
+				pointer hold = _alloc.allocate(p2);
+				iterator it = begin() + p1; // which is pos
+				for (size_type i = 0; i < p2; i++)
+				{
+					_alloc.construct(hold + i, *it);
+					++it;
+				}
+				erase(begin() + p1, this->end());
+				for (InputIt it1 = first; it1 != last; it1++)					
+					push_back(*it1);
+				for (size_type i = 0; i < p2; i++)
+				{
+					push_back(*(hold + i));
+					_alloc.destroy(hold + i);
+				}
+				_alloc.deallocate(hold, p2);
+				return (begin() + p1);
 			}
-			
+
 			iterator erase( iterator pos )
 			{
-				size_type diff = static_cast<size_type>(ft::distance(begin(), pos));
+				 // pass
+				size_type diff = static_cast<size_type>(std::distance(begin(), pos));
 				if (end() == pos)
 					return pos;
-				_alloc.destroy(_data + diff);
-				size_t i = diff;
-				while (i++ < _size)
+				_alloc.destroy((_data + diff));
+				size_type i = diff;
+				while (i < _size)
 				{
 					_alloc.construct(_data + i, _data[i + 1]);
 					_alloc.destroy(_data + (i + 1));
+					i++;
 				}
 				_size--;
-				pos = (begin() + i);
 				return (pos);
 			}
 			
 			iterator erase( iterator first, iterator last )
 			{
-				size_type diff = static_cast<size_type>(ft::distance(first, last));
-				size_type start = static_cast<size_type>(ft::distance(begin(), first));
-				if (diff == 0)
+				// pass
+
+				size_type start = static_cast<size_type>(std::distance(begin(), first));
+				size_type lenght = static_cast<size_type>(std::distance(first, last));
+				if (!lenght)
 					return last;
-				while (start <= start + diff && start + diff != _size)
+				pointer hold1 = _alloc.allocate(start);
+				size_type count1 = 0;
+				iterator it = begin();
+				while (it != first)
 				{
-					_alloc.destroy(_data + start);
-					start++;
+					_alloc.construct(hold1 + count1, *it);
+					it++;
+					count1++;
 				}
-				while (last != end())
+				pointer hold2 = _alloc.allocate(lenght);
+				size_type count2 = 0;
+				it = last;
+				while(it != end())
 				{
-					_alloc.construct(&(*first), *last);
-					_alloc.destroy(&(*last));
-					last++;
-					start++;
+					_alloc.construct(hold2 + count2, *it);
+					it++;
+					count2++;
 				}
-				_size -= diff;
-				return last;
+				clear();
+				for (size_type i = 0; i < count1; i++)
+				{
+					push_back(*(hold1 + i));
+					_alloc.destroy(hold1 + i);
+				}
+				_alloc.deallocate(hold1, start);
+				for (size_type i = 0; i < count2; i++)
+				{
+					push_back(*(hold2 + i));
+					_alloc.destroy(hold2 + i);
+				}
+				_alloc.deallocate(hold2, lenght);
+				return (iterator(_data + start));
 			}
 
 			void resize(size_type count, T value = T())
@@ -292,6 +354,8 @@ class vector
 				
 				if (count > max_size())
 					throw std::length_error("The capacity required exceeds max_size()");
+				if (count > _capacity)
+					reserve(count);
 				if (hold < count)
 					while(_size < count)
 						push_back(value);
@@ -354,15 +418,15 @@ class vector
 
 	template< class T, class Alloc > bool operator<( const ft::vector<T,Alloc>& lhs,const ft::vector<T,Alloc>& rhs ) 
 	{
-		if (!(lhs.size() < rhs.size()))
-			return false;
+		// if (!(lhs.size() < rhs.size()))
+		// 	return false;
 		return (lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
 	}
 
 	template< class T, class Alloc > bool operator>( const ft::vector<T,Alloc>& lhs,const ft::vector<T,Alloc>& rhs ) 
 	{
-		if (lhs.size() <= rhs.size())
-			return false;
+		// if (lhs.size() <= rhs.size())
+		// 	return false;
 		return (!lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
 	}
 
@@ -372,8 +436,15 @@ class vector
 		lhs = rhs;
 		rhs = tmp;
 	}
-	template< class T, class Alloc > bool operator<=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) {return (!(lhs > rhs));}
-	template< class T, class Alloc > bool operator>=( const ft::vector<T,Alloc>& lhs,const ft::vector<T,Alloc>& rhs ){ return (!(lhs < rhs));}
+	template< class T, class Alloc > bool operator<=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) 
+	{
+		
+		return ((lhs == rhs) || (lhs < rhs));
+	}
+	template< class T, class Alloc > bool operator>=( const ft::vector<T,Alloc>& lhs,const ft::vector<T,Alloc>& rhs )
+	{
+		return ((lhs == rhs) || (lhs < rhs));
+	}
 };
 
 #endif

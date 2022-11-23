@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 13:32:08 by smia              #+#    #+#             */
-/*   Updated: 2022/11/21 11:38:05 by smia             ###   ########.fr       */
+/*   Updated: 2022/11/23 18:05:30 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ namespace ft
           iterator_type base() const {return current;}
           reference operator*() const {iterator_type tmp = current; return *--tmp;}  // Returns a reference or pointer to the element previous to current.
           pointer operator->() const { return &(operator*());}
-          reference operator[] (difference_type n) const {return (base()[n - 1]);}
+          reference operator[] (difference_type n) const {return (base()[-n - 1]);}
           reverse_iterator& operator++() {--current; return (*this);}
           reverse_iterator& operator--() {++current; return (*this);}
           reverse_iterator  operator++(int) {iterator_type tmp = current; current--; return reverse_iterator(tmp);}
@@ -104,16 +104,16 @@ template <class T1, class T2>  bool operator!= (const reverse_iterator<T1>& lhs,
   return (lhs.base() != rhs.base());
 }
 template <class T1, class T2>  bool operator< (const reverse_iterator<T1>& lhs, const reverse_iterator<T2>& rhs){
-  return (lhs.base() < rhs.base());
-}
-template <class T1, class T2>  bool operator> (const reverse_iterator<T1>& lhs, const reverse_iterator<T2>& rhs){
   return (lhs.base() > rhs.base());
 }
+template <class T1, class T2>  bool operator> (const reverse_iterator<T1>& lhs, const reverse_iterator<T2>& rhs){
+  return (lhs.base() < rhs.base());
+}
 template <class T1, class T2>  bool operator<= (const reverse_iterator<T1>& lhs, const reverse_iterator<T2>& rhs){
-  return (lhs.base() <= rhs.base());
+  return (lhs.base() >= rhs.base());
 }
 template <class T1, class T2>  bool operator>= ( reverse_iterator<T1> const & lhs,  reverse_iterator<T2> const & rhs){
-  return (lhs.base() >= rhs.base());
+  return (lhs.base() <= rhs.base());
 }
 
 template< class Iter > reverse_iterator<Iter> operator+( typename reverse_iterator<Iter>::difference_type n, const reverse_iterator<Iter>& it )
@@ -231,12 +231,15 @@ class random_access_iterator
 	}
   
 // std::disctance
-template< class InputIt >
-typename iterator_traits<InputIt>::difference_type distance( InputIt first, InputIt last )
+template< class It >
+typename iterator_traits<It>::difference_type distance( It first, It last )
 {
-	typename iterator_traits<InputIt>::difference_type dis = 0;
-	while(first++ != last)
-		dis++;
+	typename iterator_traits<It>::difference_type dis = 0;
+	while(first != last)
+  {
+    first++;
+    dis++;
+  }
   return dis;
 }
 
