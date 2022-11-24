@@ -66,6 +66,8 @@
         "i": "cpp",
         "aa": "cpp",
         "__cxx_version": "cpp",
-        "list": "cpp"
+        "list": "cpp",
+        "deque": "cpp",
+        "stack": "cpp"
     }
 }

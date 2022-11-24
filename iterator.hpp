@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 13:32:08 by smia              #+#    #+#             */
-/*   Updated: 2022/11/23 18:05:30 by smia             ###   ########.fr       */
+/*   Updated: 2022/11/24 14:31:37 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,21 +19,7 @@
 
 namespace ft
 {
-  // Iterator tags
-  // typedef std::input_iterator_tag				input_iterator_tag;
-	// typedef std::random_access_iterator_tag		random_access_iterator_tag;
-  
-  // // Iterator
-  // template<class Category, class T, class Distance = std::ptrdiff_t, class Pointer = T*, class Reference = T&>
-	// class iterator {
-	// 	public:
-	// 		typedef Category		iterator_category;
-	// 		typedef T				value_type;
-	// 		typedef Distance		difference_type;
-	// 		typedef Pointer			pointer;
-	// 		typedef Reference		reference;
-	// };
-  // &&&&&&&&&&&&&&&&&&&&&&& iterator traits
+  //&&&&&&&&&&&&&&&&&&&&&&& iterator traits
 
     template <class Iterator> class iterator_traits {
       public:

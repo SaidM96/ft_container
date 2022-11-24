@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 23:38:32 by smia              #+#    #+#             */
-/*   Updated: 2022/11/22 12:50:20 by smia             ###   ########.fr       */
+/*   Updated: 2022/11/24 15:16:00 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,22 +19,22 @@
 using std::cout;
 
 int main(){
-  // {
-  //   ft::vector<std::string> array;
-  //   std::string x = "a";
-  //   for (int i = 0; i < 100; i++)
-  //   {
-  //     x = x + "a";
-  //     std::cout << x << "\n";
-  //     array.push_back(x);
-  //   }
-  //   std::cout << array.size() << "\n";
-  //   for (int i = 0; i < 100; i++)
-  //   {
-  //     std::cout << array[i] << "\n";
-  //   }
-  //   puts("-----------------------------------------------------");
-  // }
+  {
+    ft::vector<std::string> array;
+    std::string x = "a";
+    for (int i = 0; i < 100; i++)
+    {
+      x = x + "a";
+      std::cout << x << "\n";
+      array.push_back(x);
+    }
+    std::cout << array.size() << "\n";
+    for (int i = 0; i < 100; i++)
+    {
+      std::cout << array[i] << "\n";
+    }
+    puts("-----------------------------------------------------");
+  }
   {
     ft::vector<int> array;
     cout << "vector() default constructor :: pass\n";

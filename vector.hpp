@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 09:06:48 by smia              #+#    #+#             */
-/*   Updated: 2022/11/24 13:56:13 by smia             ###   ########.fr       */
+/*   Updated: 2022/11/24 16:29:46 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -431,7 +431,7 @@ class vector
 	{
 		// if (lhs.size() <= rhs.size())
 		// 	return false;
-		return (!lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+		return (!lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()) && lhs != rhs);
 	}
 
 	template< class T, class Alloc > void swap( ft::vector<T,Alloc>& lhs, ft::vector<T,Alloc>& rhs )
