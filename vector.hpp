@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 09:06:48 by smia              #+#    #+#             */
-/*   Updated: 2022/11/23 20:32:16 by smia             ###   ########.fr       */
+/*   Updated: 2022/11/24 13:56:13 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -290,77 +290,63 @@ class vector
 
 			iterator erase( iterator pos )
 			{
+				
+				// iterator it = pos;
+				// iterator end = end();
+				// _alloc.destroy(&*pos);
+				// while (pos + 1 != end)
+				// {
+				// 	_alloc.construct(&(*pos), *(pos + 1));
+				// 	pos++;
+				// }
+				// _size--;
+				// return it;
 				 // pass
 				size_type diff = static_cast<size_type>(std::distance(begin(), pos));
-				if (end() == pos)
-					return pos;
-				_alloc.destroy((_data + diff));
-				size_type i = diff;
-				while (i < _size)
+				if (end() == pos && diff < 0)
+					return end();
+				iterator it = pos;
+				iterator end = this->end();
+				_alloc.destroy(&(*pos));
+				while(pos + 1 != end)
 				{
-					_alloc.construct(_data + i, _data[i + 1]);
-					_alloc.destroy(_data + (i + 1));
-					i++;
+					_alloc.construct(&(*pos), *(pos+1));
+					++pos;
 				}
 				_size--;
-				return (pos);
+				return (it);
 			}
 			
 			iterator erase( iterator first, iterator last )
 			{
-				// pass
-
 				size_type start = static_cast<size_type>(std::distance(begin(), first));
 				size_type lenght = static_cast<size_type>(std::distance(first, last));
 				if (!lenght)
-					return last;
-				size_type count1 = 0;
-				pointer hold1;
-				if (start)
+					return end();
+				// iterator it = first;
+				// for (; it != last ; ++it)
+				// 	erase(first);
+				// return (first);
+				// 
+				iterator frst = first;
+				iterator lst = last;
+				iterator end = this->end();
+				while (frst != lst)
 				{
-					hold1 = _alloc.allocate(start);
-					
-					iterator it = begin();
-					while (it != first)
-					{
-						_alloc.construct(hold1 + count1, *it);
-						it++;
-						count1++;
-					}
+					_alloc.destroy(&(*frst));
+					++frst;
 				}
-				pointer hold2;
-				size_type count2 = 0;
-				if (lenght)
+				frst = first;
+				lst = last;
+				while (frst != lst && lst != end)
 				{
-					hold2 = _alloc.allocate(lenght);
-					iterator it = last;
-					while(it != end())
-					{
-						_alloc.construct(hold2 + count2, *it);
-						it++;
-						count2++;
-					}	
+					_alloc.construct(&(*frst), *lst);
+					++frst;
+					++lst;
 				}
-				clear();
-				if (start)
-				{
-					for (size_type i = 0; i < count1; i++)
-					{
-						push_back(*(hold1 + i));
-						_alloc.destroy(hold1 + i);
-					}
-					_alloc.deallocate(hold1, start);	
-				}
-				if (lenght)
-				{
-					for (size_type i = 0; i < count2; i++)
-					{
-						push_back(*(hold2 + i));
-						_alloc.destroy(hold2 + i);
-					}
-					_alloc.deallocate(hold2, lenght);
-				}
-				return (iterator(_data + start));
+				_size -= lenght;
+				return first;
+				
 			}
 
 			void resize(size_type count, T value = T())
