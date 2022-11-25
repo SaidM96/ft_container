@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 09:06:48 by smia              #+#    #+#             */
-/*   Updated: 2022/11/24 16:29:46 by smia             ###   ########.fr       */
+/*   Updated: 2022/11/25 12:32:28 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -422,18 +422,18 @@ class vector
 
 	template< class T, class Alloc > bool operator<( const ft::vector<T,Alloc>& lhs,const ft::vector<T,Alloc>& rhs ) 
 	{
-		// if (!(lhs.size() < rhs.size()))
+		// if ((lhs.size() > rhs.size()))
 		// 	return false;
-		return (lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+		return (lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()) && lhs != rhs);
 	}
 
 	template< class T, class Alloc > bool operator>( const ft::vector<T,Alloc>& lhs,const ft::vector<T,Alloc>& rhs ) 
 	{
-		// if (lhs.size() <= rhs.size())
+		// if (lhs.size() < rhs.size())
 		// 	return false;
 		return (!lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()) && lhs != rhs);
 	}
-
+	
 	template< class T, class Alloc > void swap( ft::vector<T,Alloc>& lhs, ft::vector<T,Alloc>& rhs )
 	{
 		ft::vector<T, Alloc> tmp(lhs);
@@ -442,12 +442,11 @@ class vector
 	}
 	template< class T, class Alloc > bool operator<=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) 
 	{
-		
 		return ((lhs == rhs) || (lhs < rhs));
 	}
 	template< class T, class Alloc > bool operator>=( const ft::vector<T,Alloc>& lhs,const ft::vector<T,Alloc>& rhs )
 	{
-		return ((lhs == rhs) || (lhs < rhs));
+		return ((lhs == rhs) || (lhs > rhs));
 	}
 };
 

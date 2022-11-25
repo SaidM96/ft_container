@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 13:58:42 by smia              #+#    #+#             */
-/*   Updated: 2022/11/24 16:25:49 by smia             ###   ########.fr       */
+/*   Updated: 2022/11/24 17:17:46 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ class stack
             this->cont = other.cont;
             return (*this);
         }
+        ~stack() {}
         reference top() { return (cont.back());}
         const_reference top() const { return cont.back();}
         bool empty() const {return (cont.empty());}
