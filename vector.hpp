@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 09:06:48 by smia              #+#    #+#             */
-/*   Updated: 2022/11/25 12:32:28 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/19 23:00:56 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -290,18 +290,6 @@ class vector
 
 			iterator erase( iterator pos )
 			{
-				
-				// iterator it = pos;
-				// iterator end = end();
-				// _alloc.destroy(&*pos);
-				// while (pos + 1 != end)
-				// {
-				// 	_alloc.construct(&(*pos), *(pos + 1));
-				// 	pos++;
-				// }
-				// _size--;
-				// return it;
-				 // pass
 				size_type diff = static_cast<size_type>(std::distance(begin(), pos));
 				if (end() == pos && diff < 0)
 					return end();
@@ -323,11 +311,6 @@ class vector
 				size_type lenght = static_cast<size_type>(std::distance(first, last));
 				if (!lenght)
 					return end();
-				// iterator it = first;
-				// for (; it != last ; ++it)
-				// 	erase(first);
-				// return (first);
-				// 
 				iterator frst = first;
 				iterator lst = last;
 				iterator end = this->end();
@@ -422,15 +405,11 @@ class vector
 
 	template< class T, class Alloc > bool operator<( const ft::vector<T,Alloc>& lhs,const ft::vector<T,Alloc>& rhs ) 
 	{
-		// if ((lhs.size() > rhs.size()))
-		// 	return false;
 		return (lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()) && lhs != rhs);
 	}
 
 	template< class T, class Alloc > bool operator>( const ft::vector<T,Alloc>& lhs,const ft::vector<T,Alloc>& rhs ) 
 	{
-		// if (lhs.size() < rhs.size())
-		// 	return false;
 		return (!lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()) && lhs != rhs);
 	}
 	
