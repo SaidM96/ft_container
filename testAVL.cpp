@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/20 00:01:55 by smia              #+#    #+#             */
-/*   Updated: 2022/12/20 09:32:10 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/20 12:14:40 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int main()
     tree.Delete(18);
     tree.Delete(108);
     tree.Delete(99);
-    // tree.Delete(81);
+    tree.Delete(81);
     puts("aw");
     tree.printTree(tree.get_root(), str, true);
 

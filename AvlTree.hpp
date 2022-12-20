@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 17:37:20 by smia              #+#    #+#             */
-/*   Updated: 2022/12/20 02:21:32 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/20 12:19:27 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -275,8 +275,8 @@ class AvlTree
                 else if ((*root)->_left != NULL  && (*root)->_right != NULL) // two child
                 {
                     node<T, alloc>* ptr = inorder_successor((*root)->_right); // now ptr point to a node with a minimum value in the right subtree
-                    *((*root)->_value) = *(ptr->_value);
-                    helper_delete(&((*root)->_right), value);
+                    _alloc.construct((*root)->_value, *(ptr->_value));
+                    helper_delete(&((*root)->_right), *(ptr->_value));
                 }
                 else // one child
                 {
@@ -290,8 +290,10 @@ class AvlTree
                     *(*root) = *ptr;
                     _alloc.destroy(ptr->_value);
                     _alloc.deallocate(ptr->_value, 1);
+                    ptr->_value = NULL;
                     _alloc_node.destroy(ptr);
                     _alloc_node.deallocate(ptr, 1);
+                    ptr = NULL;
                 }
             }
             if ((*root) == NULL)
