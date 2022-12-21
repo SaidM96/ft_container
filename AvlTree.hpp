@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 17:37:20 by smia              #+#    #+#             */
-/*   Updated: 2022/12/21 11:31:48 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/21 11:40:20 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -341,6 +341,32 @@ class AvlTree
         
         node<T, alloc>* inorder_predecessor(node<T, alloc>* Node)
         {
+            if (Node == NULL || Node->_left == NULL)
+                return Node;
+            Node = Node->_left;
+            while(Node != NULL && Node->_right != NULL)
+            {
+                Node = Node->_right;
+            }
+            return Node;
+        }
+
+        node<T, alloc>* inorder_successor(const T& value)
+        {
+            node<T, alloc>* Node = helper_search(this->_root, value);
+            if (Node == NULL || Node->_right == NULL)
+                return Node;
+            Node = Node->_right;
+            while(Node != NULL && Node->_left != NULL)
+            {
+                Node = Node->_left;
+            }
+            return Node;
+        }
+        
+        node<T, alloc>* inorder_predecessor(const T& value)
+        {
+            node<T, alloc>* Node = helper_search(this->_root, value);
             if (Node == NULL || Node->_left == NULL)
                 return Node;
             Node = Node->_left;

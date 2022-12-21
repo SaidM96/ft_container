@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 13:32:08 by smia              #+#    #+#             */
-/*   Updated: 2022/12/21 11:07:08 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/21 11:33:17 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,6 +202,10 @@ typename iterator_traits<It>::difference_type distance( It first, It last )
 }
 
 //  Bidirectional iterator
+
+
+
+
 
 }
 
