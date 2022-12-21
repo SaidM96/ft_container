@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 17:37:20 by smia              #+#    #+#             */
-/*   Updated: 2022/12/20 12:19:27 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/21 11:31:48 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ template <typename T, class alloc = std::allocator<T> >
 class node
 {
     public:
-        T* _value;
+        T*    _value;
         alloc _alloc;
         node* _parent;
         node* _right;
@@ -99,7 +99,7 @@ class AvlTree
             if (Node == NULL)
                 return 0;
             return (Node->_height);
-        }        
+        }
         
         int get_balance(node<T, alloc>* Node)
         {
@@ -215,16 +215,7 @@ class AvlTree
             rebalance(*root, value);
         }
         
-        node<T, alloc>* inorder_successor(node<T, alloc>* Node)
-        {
-            if (Node == NULL || Node->_left == NULL)
-                return Node;
-            while(Node != NULL && Node->_left != NULL)
-            {
-                Node = Node->_left;
-            }
-            return Node;
-        }
+        
         void rebalance_delete(node<T, alloc>* Node)
         {
             if (Node->_balance > 1)
@@ -274,7 +265,7 @@ class AvlTree
                 }
                 else if ((*root)->_left != NULL  && (*root)->_right != NULL) // two child
                 {
-                    node<T, alloc>* ptr = inorder_successor((*root)->_right); // now ptr point to a node with a minimum value in the right subtree
+                    node<T, alloc>* ptr = inorder_successor(*root); // now ptr point to a node with a minimum value in the right subtree
                     _alloc.construct((*root)->_value, *(ptr->_value));
                     helper_delete(&((*root)->_right), *(ptr->_value));
                 }
@@ -304,6 +295,16 @@ class AvlTree
             // rebalance
             rebalance_delete(*root);
         }
+        node<T, alloc>* helper_search(node<T, alloc>* Node, const T& value)
+        {
+            if (Node == NULL)
+                return NULL;
+            if (*(Node->_value) == value)
+                return Node;
+            else if (*(Node->_value) > value)
+                return helper_search(Node->_left, value);
+            return helper_search(Node->_right, value);
+        }
         
     public:
         AvlTree()
@@ -326,6 +327,30 @@ class AvlTree
         
         ~AvlTree(){}
 
+        node<T, alloc>* inorder_successor(node<T, alloc>* Node)
+        {
+            if (Node == NULL || Node->_right == NULL)
+                return Node;
+            Node = Node->_right;
+            while(Node != NULL && Node->_left != NULL)
+            {
+                Node = Node->_left;
+            }
+            return Node;
+        }
+        
+        node<T, alloc>* inorder_predecessor(node<T, alloc>* Node)
+        {
+            if (Node == NULL || Node->_left == NULL)
+                return Node;
+            Node = Node->_left;
+            while(Node != NULL && Node->_right != NULL)
+            {
+                Node = Node->_right;
+            }
+            return Node;
+        }
+        
         size_t max_size(void) const
         {
             return (_alloc_node.max_size());
@@ -352,7 +377,27 @@ class AvlTree
         {
             helper_delete(&_root, value);
         }
+        
+		// node<T, alloc>* min_node(node<T, alloc>* Node) const 
+        // {
+		// 	if (Node == NULL)
+		// 		return NULL;
+		// 	node<T, alloc>* ptr = Node;
+		// 	while (ptr->left)
+		// 		ptr = ptr->left;
+		// 	return ptr;
+		// }
 
+		// node<T, alloc>* max_node(node<T, alloc>* Node) const 
+        // {
+		// 	if (Node == NULL)
+		// 		return NULL;
+		// 	node<T, alloc>*	ptr = Node;
+		// 	while (ptr->right)
+		// 		ptr = ptr->right;
+		// 	return ptr;
+		// }
+        
         void printTree(node<T, alloc> *root, std::string indent, bool last) 
         {
             if (root != NULL) 

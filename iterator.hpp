@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 13:32:08 by smia              #+#    #+#             */
-/*   Updated: 2022/11/24 14:31:37 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/21 11:07:08 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,34 +112,6 @@ template< class Iterator1, class Iterator2 > typename reverse_iterator<Iterator1
   return (rhs.base() - lhs.base());
 }
 
-
-// template <class Iterator>  bool operator== (const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs){
-//   return (lhs.base() == rhs.base());
-// }
-// template <class Iterator>  bool operator!= (const reverse_iterator<Iterator >& lhs, const reverse_iterator<Iterator>& rhs){
-//   return (lhs.base() != rhs.base());
-// }
-
-
-// template <class Iterator>  bool operator<  (const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs){
-//   return (lhs.base() < rhs.base());
-// }
-
-
-// template <class Iterator>  bool operator<= (const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs){
-//   return (lhs.base() <= rhs.base());
-// }
-
-
-// template <class Iterator>  bool operator>  (const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs){
-//   return (lhs.base() > rhs.base());
-// }
-
-// template <class Iterator>  bool operator>= (const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs){
-//   return (lhs.base() >= rhs.base());
-// }
-
-
 // random_access_iterator
 //
       // 
@@ -230,6 +202,7 @@ typename iterator_traits<It>::difference_type distance( It first, It last )
 }
 
 //  Bidirectional iterator
+
 }
 
   #endif 

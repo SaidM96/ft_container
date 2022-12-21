@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/20 00:01:55 by smia              #+#    #+#             */
-/*   Updated: 2022/12/20 12:14:40 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/21 11:26:09 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,24 @@ int main()
     tree.insert(81);
     std::string str("");
     tree.printTree(tree.get_root(), str, true);
+    if (tree.search(63))
+        puts("63 found");
+    if (tree.search(9))
+        puts("9 found");  
+    if (tree.search(19))
+        puts("19 found");  
+     if (tree.search(27))
+        puts("27 found");  
+    if (tree.search(18))
+        puts("18 found");
+    if (tree.search(27))
+        puts("27 found");   
+    if (tree.search(108))
+        puts("108 found");   
+    if (tree.search(99))
+        puts("99 found");    
+    if (tree.search(81))
+        puts("81 found"); 
     tree.Delete(63);
     tree.Delete(9);
     tree.Delete(19);
