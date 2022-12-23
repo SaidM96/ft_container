@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 17:37:20 by smia              #+#    #+#             */
-/*   Updated: 2022/12/23 15:09:26 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/23 20:42:14 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,11 @@ class node
         node& operator=(const node& x)
         {
             if (_value)
+            {
                 _alloc.destroy(_value);
-            else
-                _value = _alloc.allocate(1);
+                _alloc.deallocat(_value, 1);
+            }
+            _value = _alloc.allocate(1);
             _alloc.construct(_value, *(x._value));
             _parent = x._parent;
             _left = x._left;
@@ -69,9 +71,8 @@ class node
 
         ~node()
         {
-            // _alloc.destroy(this);
-            // _alloc_node
         }
+
 };
 
 template <typename T, class cmp = std::less<T>, class alloc = std::allocator<T> >
@@ -305,7 +306,24 @@ class AvlTree
             // rebalance
             rebalance_delete(*root);
         }
-        
+        void clear_helper(node<T, alloc>** root)
+        {
+            if ((*root) != NULL) 
+            {
+                clear_helper(&(*root)->_left);
+                clear_helper(&(*root)->_right);
+                if ((*root)->_value != NULL)
+                {
+                    _alloc.destroy((*root)->_value);
+                    _alloc.deallocate((*root)->_value, 1);
+                    (*root)->_value = NULL;
+                }
+                _alloc_node.destroy((*root));
+                _alloc_node.deallocate((*root), 1);
+                (*root) = NULL;
+                _size--;
+            }
+        }
     public:
         AvlTree()
         {
@@ -320,9 +338,9 @@ class AvlTree
         
         AvlTree& operator=(const AvlTree& x)
         {
-            _root = x._root;
-            _size = x.size;
+            Clear();
             _compare = x._compare;
+            Copy(x._root);
             return (*this);
         }
         
@@ -464,8 +482,20 @@ class AvlTree
                 printTree(root->_right, indent, true);
             }
         }
-        
-        
+        void Copy(const node<T, alloc> *Node) 
+        {
+			if (Node == NULL)
+				return ;
+			if (Node->_value)
+				insert(*(Node->_value));
+			Copy(Node->_left);
+			Copy(Node->_right);
+		}
+        void Clear()
+        {
+            if (_root)
+                clear_helper(&_root);
+        }
 };
 
 };

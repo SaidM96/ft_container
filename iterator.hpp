@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 13:32:08 by smia              #+#    #+#             */
-/*   Updated: 2022/12/21 23:38:44 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/23 16:31:12 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,7 +207,7 @@ class bidirectional_iterator
 {
 
     public:
-        typedef ft::AvlTree<T, cmp, alloc>            node;
+        typedef ft::AvlTree<T, cmp, alloc>*            tree;
         typedef T                                 value_type;  
         typedef std::bidirectional_iterator_tag   iterator_category;
         typedef T*											          pointer;
@@ -219,7 +219,7 @@ class bidirectional_iterator
         bidirectional_iterator(): _data(NULL), _tree(NULL)
         {
         }
-        bidirectional_iterator(pointer ptr, const node tr = NULL) : _data(ptr), _tree(tr)
+        bidirectional_iterator(pointer ptr, const tree tr = NULL) : _data(ptr), _tree(tr)
         {}
         bidirectional_iterator& operator=(const bidirectional_iterator& cp)
         {
@@ -284,7 +284,7 @@ class bidirectional_iterator
         
     private:
       T*                      _data;
-      node                    _tree;
+      tree                    _tree;
         
         
 };

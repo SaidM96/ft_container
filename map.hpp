@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/21 20:34:14 by smia              #+#    #+#             */
-/*   Updated: 2022/12/21 23:33:07 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/23 16:44:32 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ namespace ft
           typedef  Key                                                     Key_type;
           typedef  T                                                       mapped_key;
           typedef  ft::pair< const Key_type, mapped_key>                   value_type;
+          typedef  AvlTree<value_type, Compare, alloc>*                    tree;
           typedef  std::size_t                                             size_type;
           typedef  std::ptrdiff_t                                          difference_type;
           typedef  Compare                                                 key_compare;
@@ -58,9 +59,10 @@ namespace ft
               }
           };
           
-              ///// constructor
+              ///// constructors
           explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
           {
+            _avl = NULL;
             _size = 0;
             _compare = comp;
             _alloc = alloc;
@@ -75,12 +77,64 @@ namespace ft
               _avl->insert(*first);
               ++first;
             }
-            
+            _size = _avl->get_size();
           }
 
+          map( const map& other )
+          {
+            _avl = other._avl;
+            _compare = other._compare;
+            _size = other._size;
+          }
+          
+          allocator_type get_allocator() const
+          {
+            return (_alloc);
+          }
+          
+          map& operator=( const map& other )
+          {
+            _avl = other._avl;
+            _compare = other._compare;
+            _size = other._size;
+          }
+      // iterators
+        iterator begin()
+        {
+          return (iterator(_avl->min_node(_avl->get_root()), _avl));
+        }
+        const_iterator begin() const
+        {
+          return (iterator(_avl->min_node(_avl->get_root()), _avl));
+        }
+        iterator end()
+        {
+          return (iterator(NULL, _avl));
+        }
+        const_iterator end() const
+        { 
+          return (iterator(NULL, _avl));
+        }
+        
+        reverse_iterator rbegin()
+        {
+          return (reverse_iterator(end()));
+        }
+        const_reverse_iterator rbegin() const
+        {
+          return (reverse_iterator(end()));
+        }
+        reverse_iterator rend()
+        {
+          retrun (reverse_iterator(begin()));
+        }
+        const_reverse_iterator rend() const
+        {
+          return(const_reverse_iterator(begin()));
+        }
         
       private:
-        AvlTree<value_type, Compare, alloc>*  _avl;
+        tree  _avl;
         size_type             _size;
         allocator_type        _alloc;
         key_compare           _compare;
