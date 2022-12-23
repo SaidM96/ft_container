@@ -6,17 +6,16 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 13:32:08 by smia              #+#    #+#             */
-/*   Updated: 2022/12/21 11:33:17 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/21 23:38:44 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
-#ifndef ITERATOR_HPP
-#define ITERATOR_HPP
+#pragma once
 
 #include <iostream>
 #include "is_integral.hpp"
-
+#include "AvlTree.hpp"
 namespace ft
 {
   //&&&&&&&&&&&&&&&&&&&&&&& iterator traits
@@ -203,10 +202,91 @@ typename iterator_traits<It>::difference_type distance( It first, It last )
 
 //  Bidirectional iterator
 
+template <typename T, class cmp, class alloc>
+class bidirectional_iterator
+{
 
+    public:
+        typedef ft::AvlTree<T, cmp, alloc>            node;
+        typedef T                                 value_type;  
+        typedef std::bidirectional_iterator_tag   iterator_category;
+        typedef T*											          pointer;
+        typedef T&											          reference;
+        typedef std::ptrdiff_t								    difference_type;
+        typedef const T*						              const_pointer;
+        typedef const T&						              const_reference;
 
+        bidirectional_iterator(): _data(NULL), _tree(NULL)
+        {
+        }
+        bidirectional_iterator(pointer ptr, const node tr = NULL) : _data(ptr), _tree(tr)
+        {}
+        bidirectional_iterator& operator=(const bidirectional_iterator& cp)
+        {
+          _data = cp._data;
+          _tree = cp._tree;
+          return (*this);
+        }
+        ~bidirectional_iterator(){}
 
+        bool operator==(const bidirectional_iterator& other) const
+        {
+            return (_data == other._data);
+        }
+        bool operator!=(const bidirectional_iterator& other) const
+        {
+            return (_data != other._data);
+        }
 
-}
+        reference operator*() const
+        {
+          return(*_data);
+        }
 
-  #endif 
+        pointer operator->() const
+        {
+          return (&(operator*()));
+        }
+
+        bidirectional_iterator& operator++(void)
+        {
+          if (_data != NULL)
+            _data = _tree->inorder_successor(*_data);
+          return *this;
+        }
+
+        bidirectional_iterator& operator--(void)
+        {
+          if (_data == NULL)
+            _data = _tree->max_node(_tree->get_root())->_value;
+          else
+            _data = _tree->inorder_predecessor(*_data);
+          return *this;
+        }
+
+        bidirectional_iterator& operator++(int)
+        {
+          pointer tmp = _data;
+          if (_data != NULL)
+            _data = _tree->inorder_successor(*_data);
+          return tmp;
+        }
+
+        bidirectional_iterator& operator--(int)
+        {
+          pointer tmp = _data;
+          if (_data == NULL)
+            _data = _tree->max_node(_tree->get_root())->_value;
+          else
+            _data = _tree->inorder_predecessor(*_data);
+          return tmp;
+        }
+        
+    private:
+      T*                      _data;
+      node                    _tree;
+        
+        
+};
+
+};

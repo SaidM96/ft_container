@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 17:37:20 by smia              #+#    #+#             */
-/*   Updated: 2022/12/21 11:40:20 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/23 15:09:26 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include "iostream"
 #include <string>
 
+namespace ft
+{
 template <typename T, class alloc = std::allocator<T> >
 class node
 {
@@ -38,7 +40,7 @@ class node
             _height = 0;
             _balance = 0;
         }
-        
+
         node(const T& value)
         {
             _value = _alloc.allocate(1);
@@ -65,7 +67,11 @@ class node
             return (*this);
         }
 
-        ~node(){}
+        ~node()
+        {
+            // _alloc.destroy(this);
+            // _alloc_node
+        }
 };
 
 template <typename T, class cmp = std::less<T>, class alloc = std::allocator<T> >
@@ -77,6 +83,7 @@ class AvlTree
         alloc                                                        _alloc;
         cmp                                                         _compare;
         typename alloc::template rebind<node<T, alloc> >::other     _alloc_node;
+
 
         size_t is_child(node<T, alloc>* Node)
         {
@@ -113,7 +120,6 @@ class AvlTree
             node<T, alloc>* hold = (Node)->_parent;
             node<T, alloc>* ptr = (Node)->_right;
             node<T, alloc>* tmp = ptr->_left;
-
 
             Node->_parent = ptr;
             ptr->_left = Node;
@@ -195,6 +201,7 @@ class AvlTree
             {
                 (*root) = _alloc_node.allocate(1);
                 _alloc_node.construct((*root), value);
+                ++_size;
             }
             else if (_compare(*((*root)->_value),value))
             {
@@ -240,14 +247,17 @@ class AvlTree
                 {
                     right_rotate(Node->_right);
                     left_rotate(Node->_left);
-                }               
+                } 
             }
         }
 
         void helper_delete(node<T, alloc>** root, const T& value)
         {
             if ((*root) == NULL)
+            {
+                --_size;
                 return ;
+            }
             if (_compare(value, *((*root)->_value)))
                 helper_delete(&((*root)->_left), value);
             else if (_compare(*((*root)->_value), value))
@@ -265,7 +275,7 @@ class AvlTree
                 }
                 else if ((*root)->_left != NULL  && (*root)->_right != NULL) // two child
                 {
-                    node<T, alloc>* ptr = inorder_successor(*root); // now ptr point to a node with a minimum value in the right subtree
+                    node<T, alloc>* ptr = inorder_successor((*root)->_right); // now ptr point to a node with a minimum value in the right subtree
                     _alloc.construct((*root)->_value, *(ptr->_value));
                     helper_delete(&((*root)->_right), *(ptr->_value));
                 }
@@ -295,20 +305,11 @@ class AvlTree
             // rebalance
             rebalance_delete(*root);
         }
-        node<T, alloc>* helper_search(node<T, alloc>* Node, const T& value)
-        {
-            if (Node == NULL)
-                return NULL;
-            if (*(Node->_value) == value)
-                return Node;
-            else if (*(Node->_value) > value)
-                return helper_search(Node->_left, value);
-            return helper_search(Node->_right, value);
-        }
         
     public:
         AvlTree()
         {
+            _size = 0;
             _root = NULL;
         }
 
@@ -320,18 +321,31 @@ class AvlTree
         AvlTree& operator=(const AvlTree& x)
         {
             _root = x._root;
+            _size = x.size;
             _compare = x._compare;
-
             return (*this);
         }
         
-        ~AvlTree(){}
-
+        ~AvlTree()
+        {
+        }
+        
+        node<T, alloc>* helper_search(node<T, alloc>* Node, const T& value)
+        {
+            if (Node == NULL)
+                return NULL;
+            if (*(Node->_value) == value)
+                return Node;
+            else if (*(Node->_value) > value)
+                return helper_search(Node->_left, value);
+            return helper_search(Node->_right, value);
+        }
+        
         node<T, alloc>* inorder_successor(node<T, alloc>* Node)
         {
             if (Node == NULL || Node->_right == NULL)
                 return Node;
-            Node = Node->_right;
+            // Node = Node->_right;
             while(Node != NULL && Node->_left != NULL)
             {
                 Node = Node->_left;
@@ -354,27 +368,33 @@ class AvlTree
         node<T, alloc>* inorder_successor(const T& value)
         {
             node<T, alloc>* Node = helper_search(this->_root, value);
-            if (Node == NULL || Node->_right == NULL)
+            if (Node == NULL)
                 return Node;
-            Node = Node->_right;
-            while(Node != NULL && Node->_left != NULL)
+            if (Node->_right)
+                return min_node(Node);
+            node<T, alloc>*	hold = Node->_parent;
+            while(Node != NULL && Node->_right != Node)
             {
-                Node = Node->_left;
+                Node = hold;
+                hold = Node->_parent;
             }
-            return Node;
+            return hold;
         }
         
         node<T, alloc>* inorder_predecessor(const T& value)
         {
             node<T, alloc>* Node = helper_search(this->_root, value);
-            if (Node == NULL || Node->_left == NULL)
+            if (Node == NULL)
                 return Node;
-            Node = Node->_left;
-            while(Node != NULL && Node->_right != NULL)
+            if (Node->_left)
+                return max_node(Node);
+            node<T, alloc>*	hold = Node->_parent;
+            while(Node != NULL && Node->_right != Node)
             {
-                Node = Node->_right;
+                Node = hold;
+                hold = Node->_parent;
             }
-            return Node;
+            return hold;
         }
         
         size_t max_size(void) const
@@ -386,7 +406,10 @@ class AvlTree
         {
             return (this->_root);
         }
-        
+        size_t get_size(void) const
+        {
+            return _size;
+        }
         void insert(const T& value)
         {
             helper_insert(&_root, value);
@@ -404,25 +427,25 @@ class AvlTree
             helper_delete(&_root, value);
         }
         
-		// node<T, alloc>* min_node(node<T, alloc>* Node) const 
-        // {
-		// 	if (Node == NULL)
-		// 		return NULL;
-		// 	node<T, alloc>* ptr = Node;
-		// 	while (ptr->left)
-		// 		ptr = ptr->left;
-		// 	return ptr;
-		// }
+		node<T, alloc>* min_node(node<T, alloc>* Node) const 
+        {
+			if (Node == NULL)
+				return NULL;
+			node<T, alloc>* ptr = Node;
+			while (ptr->_left)
+				ptr = ptr->_left;
+			return ptr;
+		}
 
-		// node<T, alloc>* max_node(node<T, alloc>* Node) const 
-        // {
-		// 	if (Node == NULL)
-		// 		return NULL;
-		// 	node<T, alloc>*	ptr = Node;
-		// 	while (ptr->right)
-		// 		ptr = ptr->right;
-		// 	return ptr;
-		// }
+		node<T, alloc>* max_node(node<T, alloc>* Node) const 
+        {
+			if (Node == NULL)
+				return NULL;
+			node<T, alloc>*	ptr = Node;
+			while (ptr->_right)
+				ptr = ptr->_right;
+			return ptr;
+		}
         
         void printTree(node<T, alloc> *root, std::string indent, bool last) 
         {
@@ -436,11 +459,13 @@ class AvlTree
                 std::cout << "L----";
                 indent += "|  ";
                 }
-                std::cout << *(root->_value) << std::endl;
+                std::cout << *(root->_value) << " balance: "<<root->_balance << std::endl;
                 printTree(root->_left, indent, false);
                 printTree(root->_right, indent, true);
             }
         }
         
         
+};
+
 };
