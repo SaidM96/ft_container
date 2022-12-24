@@ -240,17 +240,17 @@ namespace ft
 
         const T& at( const Key& key ) const
         {
-           node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
-           value_type a = ptr->_value;
-           if (!ptr)
-           {
+          //  node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+          //  value_type a = ptr->_value;
+          //  if (!ptr)
+          //  {
 
-              ptr = _avl->insert(*(ptr->_value));
-              a = ptr->_value;
-              _size = _avl->get_size();
-              return a.second;
-           }
-           return a.second;
+          //     ptr = _avl->insert(*(ptr->_value));
+          //     a = ptr->_value;
+          //     _size = _avl->get_size();
+          //     return a.second;
+          //  }
+          //  return a.second;
         }
 
         // capacity
