@@ -18,7 +18,7 @@
 #include "lexicographical_compare.hpp"
 namespace ft
 {
-    template<class Key,class T,class Compare = std::less<Key>,class alloc = std::allocator<std::pair<const Key, T>> > 
+    template<class Key,class T,class Compare = std::less<Key>,class alloc = std::allocator<ft::pair< Key, T>> > 
     class map
     {
         
@@ -60,18 +60,14 @@ namespace ft
           };
           
               ///// constructors
-          explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
+          explicit map (const key_compare& comp = key_compare(), const allocator_type& Alloc = allocator_type()) : _alloc(Alloc), _compare(comp)
           {
             _avl = NULL;
             _size = 0;
-            _compare = comp;
-            _alloc = alloc;
           }
           template <class InputIterator>  
-          map (InputIterator first, InputIterator last,const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
+          map (InputIterator first, InputIterator last,const key_compare& comp = key_compare(), const allocator_type& Alloc = allocator_type()) : _alloc(Alloc), _compare(comp)
           {
-            _compare = comp;
-            _alloc = alloc;
             while(first != last)
             {
               _avl->insert(*first);
@@ -187,7 +183,7 @@ namespace ft
         size_type erase( const Key& key )
         {
           size_type size = _size;
-          _avl->Delete(ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+          _avl->Delete(ft::make_pair(key, mapped_key()));
           if (size == _size)
           {
             _size = _avl->get_size();
@@ -203,7 +199,7 @@ namespace ft
           key_compare   cmp = _compare;
 
           _compare = other._compare;
-          avl = other._avl;
+          _avl = other._avl;
 
           other._compare = cmp;
           other._avl = tmp;
@@ -268,7 +264,7 @@ namespace ft
         }
         size_type max_size() const
         {
-          return (_alloc.max_size())
+          return (_alloc.max_size());
         }
         // Lookup
         size_type count( const Key& key ) const
@@ -346,7 +342,7 @@ namespace ft
           return _compare;
         }
 
-        ft::map::value_compare value_comp() const
+        typename ft::map<value_type, key_compare, alloc>::value_compare value_comp() const
         {
             return (value_comp(_compare));
         }
@@ -365,7 +361,7 @@ namespace ft
     }
 
     template< class Key, class T, class Compare, class Alloc >
-    bool operator==( const ft::map<Key,T,Compare,Alloc>& lhs,const ft::map<Key,T,Compare,Alloc>& rhs )
+    bool operator==( const typename ft::map<Key,T,Compare,Alloc>& lhs,const typename  ft::map<Key,T,Compare,Alloc>& rhs )
     {
       typename ft::map<Key, T, Compare, Alloc>::const_iterator it = lhs.begin();
       typename  ft::map<Key, T, Compare, Alloc>::const_iterator itt = rhs.begin();
