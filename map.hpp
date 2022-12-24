@@ -11,11 +11,11 @@
 /* ************************************************************************** */
 
 #pragma once
-
+#include <iostream>
 #include "iterator.hpp"
 #include "AvlTree.hpp"
 #include "pair.hpp"
-
+#include "lexicographical_compare.hpp"
 namespace ft
 {
     template<class Key,class T,class Compare = std::less<Key>,class alloc = std::allocator<std::pair<const Key, T>> > 
@@ -36,18 +36,18 @@ namespace ft
           typedef  value_type*                                             pointer;
           typedef  const value_type*                                       const_pointer;
           typedef  ft::bidirectional_iterator<T, Compare, alloc>           iterator;
-          typedef  ft::bidirectional_iterator<const T, Compare, alloc>     const_iterator
+          typedef  ft::bidirectional_iterator<const T, Compare, alloc>     const_iterator;
 			    typedef  ft::reverse_iterator<iterator>					                 reverse_iterator;
 			    typedef  ft::reverse_iterator<const_iterator>			               const_reverse_iterator;
 
-          class value_type  : public std::binary_function<value_type, value_type, bool>
+          class value_compare  : public std::binary_function<value_type, value_type, bool>
           {
             friend class map;
             protected:
               Compare _cmp;
               value_compare(Compare cmp)
               {
-                cmp = cmp;
+                _cmp = cmp;
               }
             public:
               bool          result_type;
@@ -94,8 +94,8 @@ namespace ft
           
           map& operator=( const map& other )
           {
-            _avl = other._avl;
             _compare = other._compare;
+            _avl = other._avl;
             _size = other._size;
           }
       // iterators
@@ -133,12 +133,281 @@ namespace ft
           return(const_reverse_iterator(begin()));
         }
         
+        // modifiers
+        void clear()
+        {
+          _avl->Clear();
+          _size = 0;
+        }
+
+        ft::pair<iterator, bool> insert( const value_type& value )
+        {
+            bool x;
+            node<value_type, alloc>* ptr = _avl->insert(value);
+            if (ptr == NULL)
+              x = false;
+            else
+              x = true;
+            iterator it(ptr, _avl);
+            return (ft::pair<value_type, bool>(it,x));
+        }
+
+        iterator insert( iterator pos, const value_type& value )
+        {
+            (void)pos;
+            return iterator(_avl->insert(value));
+        }
+
+        template< class InputIt >
+        void insert( InputIt first, InputIt last )
+        {
+            while(first != last)
+            {
+              _avl->insert(*first);
+              ++first;
+            }
+        }
+      
+        iterator erase( iterator pos )
+        {
+          _avl->Delete(*pos);
+          _size = _avl->get_size();
+        }
+
+        iterator erase( iterator first, iterator last )
+        {
+          while(first != last)
+          {
+            _avl->Delete(*first);
+            ++first;
+          }
+          _size = _avl->get_size();
+        }
+
+        size_type erase( const Key& key )
+        {
+          size_type size = _size;
+          _avl->Delete(ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+          if (size == _size)
+          {
+            _size = _avl->get_size();
+            return 0;
+          }           
+          _size = _avl->get_size();
+          return 1;
+        }
+
+        void swap( map& other )
+        {
+          tree tmp(_avl);
+          key_compare   cmp = _compare;
+
+          _compare = other._compare;
+          avl = other._avl;
+
+          other._compare = cmp;
+          other._avl = tmp;
+        }
+
+        // element access 
+        T& at( const Key& key )
+        {
+           node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+           if (ptr != NULL)
+            return ptr->_value->second;
+           throw std::out_of_range("out of range\n");
+        }
+
+        const T& at( const Key& key ) const
+        {
+           node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+           value_type a = ptr->_value;
+           if (ptr != NULL)
+              return a.second;
+           throw std::out_of_range("out of range\n");       
+        }
+
+        T& operator[]( const Key& key )
+        {
+           node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+           value_type a = ptr->_value;
+           if (!ptr)
+           {
+
+              ptr = _avl->insert(*(ptr->_value));
+              a = ptr->_value;
+              _size = _avl->get_size();
+              return a.second;
+           }
+           return a.second;
+        }
+
+        const T& at( const Key& key ) const
+        {
+           node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+           value_type a = ptr->_value;
+           if (!ptr)
+           {
+
+              ptr = _avl->insert(*(ptr->_value));
+              a = ptr->_value;
+              _size = _avl->get_size();
+              return a.second;
+           }
+           return a.second;
+        }
+
+        // capacity
+        bool empty() const
+        {
+          return (_size != 0);
+        }
+        size_type size() const
+        {
+          return _size;
+        }
+        size_type max_size() const
+        {
+          return (_alloc.max_size())
+        }
+        // Lookup
+        size_type count( const Key& key ) const
+        {
+           node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+           if (ptr != NULL)
+              return 1;
+           return 0;
+        }
+        iterator find( const Key& key )
+        {
+           node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+           if (ptr == NULL)
+              return (end());
+           value_type a = ptr->_value;
+           return (iterator(a, _avl));
+        }
+        const_iterator find( const Key& key ) const
+        {
+           node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+           if (ptr == NULL)
+              return (end());
+           value_type a = ptr->_value;
+           return (const_iterator(a, _avl));
+        }
+        iterator lower_bound( const Key& key )
+        {
+           node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+           if (ptr == NULL)
+              return (end());
+           ptr = _avl->inorder_predecessor(*(ptr->_value));
+          return (iterator(ptr->_value, _avl));
+        }
+
+        const_iterator lower_bound( const Key& key ) const
+        {
+           node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+           if (ptr == NULL)
+              return (end());
+           ptr = _avl->inorder_predecessor(*(ptr->_value));
+          return (const_iterator(ptr->_value, _avl));
+        }
+
+        iterator upper_bound( const Key& key )
+        {
+            node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+           if (ptr == NULL)
+              return (end());
+            ptr = _avl->inorder_successor(*(ptr->_value));
+          return (iterator(ptr->_value, _avl));
+        }
+
+        const_iterator upper_bound( const Key& key ) const
+        {
+            node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+           if (ptr == NULL)
+              return (end());
+            ptr = _avl->inorder_successor(*(ptr->_value));
+          return (const_iterator(ptr->_value, _avl));
+        }
+
+        ft::pair<iterator,iterator> equal_range( const Key& key )
+        {
+            return (make_pair(lower_bound(key), upper_bound(key)));
+        }
+
+        ft::pair<const_iterator,const_iterator> equal_range( const Key& key ) const
+        {
+            return (make_pair(lower_bound(key), upper_bound(key)));
+        }
+
+        // Observers
+        key_compare key_comp() const
+        {
+          return _compare;
+        }
+
+        ft::map::value_compare value_comp() const
+        {
+            return (value_comp(_compare));
+        }
       private:
-        tree  _avl;
+        tree                  _avl;
         size_type             _size;
         allocator_type        _alloc;
         key_compare           _compare;
           
     };
-    
+
+    template< class Key, class T, class Compare, class Alloc >
+    void swap( ft::map<Key,T,Compare,Alloc>& lhs, ft::map<Key,T,Compare,Alloc>& rhs )
+    {
+          lhs.swap(rhs);
+    }
+
+    template< class Key, class T, class Compare, class Alloc >
+    bool operator==( const ft::map<Key,T,Compare,Alloc>& lhs,const ft::map<Key,T,Compare,Alloc>& rhs )
+    {
+      typename ft::map<Key, T, Compare, Alloc>::const_iterator it = lhs.begin();
+      typename  ft::map<Key, T, Compare, Alloc>::const_iterator itt = rhs.begin();
+
+      while(it != lhs.end() && itt != rhs.end())
+      {
+        if (it != itt)
+          return false;
+        ++it;
+        ++itt;
+      }
+      if (it == itt)
+        return true;
+      return false;
+    }
+    template< class Key, class T, class Compare, class Alloc >
+    bool operator!=( const ft::map<Key,T,Compare,Alloc>& lhs,const ft::map<Key,T,Compare,Alloc>& rhs )
+    {
+      return (!(lhs == rhs));
+    }
+
+    template< class Key, class T, class Compare, class Alloc >
+    bool operator>( const ft::map<Key,T,Compare,Alloc>& lhs,const ft::map<Key,T,Compare,Alloc>& rhs )
+    {
+        return (ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
+    }
+
+    template< class Key, class T, class Compare, class Alloc >
+    bool operator<( const ft::map<Key,T,Compare,Alloc>& lhs,const ft::map<Key,T,Compare,Alloc>& rhs )
+    {
+        return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+    }
+
+    template< class Key, class T, class Compare, class Alloc >
+    bool operator<=( const ft::map<Key,T,Compare,Alloc>& lhs,const ft::map<Key,T,Compare,Alloc>& rhs )
+    {
+        return (!(lhs > rhs));
+    }
+
+    template< class Key, class T, class Compare, class Alloc >
+    bool operator>=( const ft::map<Key,T,Compare,Alloc>& lhs,const ft::map<Key,T,Compare,Alloc>& rhs )
+    {
+        return (!(lhs < rhs));
+    }
 };

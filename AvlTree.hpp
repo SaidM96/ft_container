@@ -195,7 +195,7 @@ class AvlTree
             }
         }
         
-        void helper_insert(node<T, alloc>** root, const T& value)
+        void helper_insert(node<T, alloc>** root, const T& value, node<T, alloc>* ret)
         {
             // using recursion we insert new Node like BST insertion
             if (*root == NULL)
@@ -203,6 +203,7 @@ class AvlTree
                 (*root) = _alloc_node.allocate(1);
                 _alloc_node.construct((*root), value);
                 ++_size;
+                ret = (*root);
             }
             else if (_compare(*((*root)->_value),value))
             {
@@ -346,6 +347,7 @@ class AvlTree
         
         ~AvlTree()
         {
+            Clear();
         }
         
         node<T, alloc>* helper_search(node<T, alloc>* Node, const T& value)
@@ -428,9 +430,11 @@ class AvlTree
         {
             return _size;
         }
-        void insert(const T& value)
+        node<T, alloc>* insert(const T& value)
         {
-            helper_insert(&_root, value);
+            node<T, alloc> ret = NULL;
+            helper_insert(&_root, value, &ret);
+            return &ret;
         }
 
         bool search(const T& value)
@@ -488,13 +492,16 @@ class AvlTree
 				return ;
 			if (Node->_value)
 				insert(*(Node->_value));
-			Copy(Node->_left);
 			Copy(Node->_right);
+			Copy(Node->_left);
 		}
         void Clear()
         {
             if (_root)
+            {
                 clear_helper(&_root);
+                
+            }
         }
 };
 

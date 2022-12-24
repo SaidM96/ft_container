@@ -68,6 +68,9 @@
         "__cxx_version": "cpp",
         "list": "cpp",
         "deque": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "*.tcc": "cpp",
+        "random": "cpp",
+        "numeric": "cpp"
     }
 }

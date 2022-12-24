@@ -20,7 +20,6 @@ int main()
     ft::AvlTree<int> tree;
     std::string str("");
 
-        
         tree.insert(63);
         tree.insert(9);
         tree.insert(19);
@@ -29,6 +28,7 @@ int main()
         tree.insert(108);
         tree.insert(99);
         tree.insert(81);
+        tree.printTree(tree.get_root(), str, true);
         b = tree;
 
     
@@ -67,8 +67,7 @@ int main()
     // tree.printTree(tree.get_root(), str, true);
 
 
-    b.printTree(b.get_root(), str, true);
-    b.Clear();
+    // b.Clear();
     b.printTree(b.get_root(), str, true);
 
 
