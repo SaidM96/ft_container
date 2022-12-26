@@ -71,6 +71,8 @@
         "stack": "cpp",
         "*.tcc": "cpp",
         "random": "cpp",
-        "numeric": "cpp"
+        "numeric": "cpp",
+        "__tree": "cpp",
+        "map": "cpp"
     }
 }

@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/21 20:34:14 by smia              #+#    #+#             */
-/*   Updated: 2022/12/23 16:44:32 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/25 23:29:50 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include "lexicographical_compare.hpp"
 namespace ft
 {
-    template<class Key,class T,class Compare = std::less<Key>,class alloc = std::allocator<ft::pair< Key, T>> > 
+    template<class Key,class T,class Compare = std::less<Key>,class alloc = std::allocator<ft::pair< Key, T> > > 
     class map
     {
         
@@ -26,7 +26,7 @@ namespace ft
           typedef  Key                                                     Key_type;
           typedef  T                                                       mapped_key;
           typedef  ft::pair< const Key_type, mapped_key>                   value_type;
-          typedef  AvlTree<value_type, Compare, alloc>*                    tree;
+          typedef  AvlTree<value_type, Compare, alloc>                    tree;
           typedef  std::size_t                                             size_type;
           typedef  std::ptrdiff_t                                          difference_type;
           typedef  Compare                                                 key_compare;
@@ -35,10 +35,10 @@ namespace ft
           typedef  const value_type&                                       const_reference;
           typedef  value_type*                                             pointer;
           typedef  const value_type*                                       const_pointer;
-          typedef  ft::bidirectional_iterator<T, Compare, alloc>           iterator;
-          typedef  ft::bidirectional_iterator<const T, Compare, alloc>     const_iterator;
-			    typedef  ft::reverse_iterator<iterator>					                 reverse_iterator;
-			    typedef  ft::reverse_iterator<const_iterator>			               const_reverse_iterator;
+          typedef  typename ft::bidirectional_iterator<T, key_compare, allocator_type>           iterator;
+          typedef  typename ft::bidirectional_iterator<const T, key_compare, allocator_type>     const_iterator;
+			    typedef  typename ft::reverse_iterator<iterator>					                 reverse_iterator;
+			    typedef  typename ft::reverse_iterator<const_iterator>			               const_reverse_iterator;
 
           class value_compare  : public std::binary_function<value_type, value_type, bool>
           {
@@ -64,7 +64,7 @@ namespace ft
           {
             _avl = NULL;
             _size = 0;
-          }
+          } 
           template <class InputIterator>  
           map (InputIterator first, InputIterator last,const key_compare& comp = key_compare(), const allocator_type& Alloc = allocator_type()) : _alloc(Alloc), _compare(comp)
           {
@@ -97,11 +97,12 @@ namespace ft
       // iterators
         iterator begin()
         {
-          return (iterator(_avl->min_node(_avl->get_root()), _avl));
+          
+          return (iterator(_avl.min_node(_avl.get_root())->_value, &_avl));
         }
         const_iterator begin() const
         {
-          return (iterator(_avl->min_node(_avl->get_root()), _avl));
+          return (iterator(_avl.min_node(_avl.get_root())->_value, &_avl));
         }
         iterator end()
         {
@@ -144,14 +145,14 @@ namespace ft
               x = false;
             else
               x = true;
-            iterator it(ptr, _avl);
-            return (ft::pair<value_type, bool>(it,x));
+            iterator it(ptr->_value, _avl);
+            return (ft::make_pair(it,x));
         }
 
         iterator insert( iterator pos, const value_type& value )
         {
             (void)pos;
-            return iterator(_avl->insert(value));
+            return iterator(_avl->insert(value)->_value, &_avl);
         }
 
         template< class InputIt >
@@ -162,6 +163,7 @@ namespace ft
               _avl->insert(*first);
               ++first;
             }
+            _size = _avl->get_size();
         }
       
         iterator erase( iterator pos )
@@ -236,21 +238,6 @@ namespace ft
               return a.second;
            }
            return a.second;
-        }
-
-        const T& at( const Key& key ) const
-        {
-          //  node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
-          //  value_type a = ptr->_value;
-          //  if (!ptr)
-          //  {
-
-          //     ptr = _avl->insert(*(ptr->_value));
-          //     a = ptr->_value;
-          //     _size = _avl->get_size();
-          //     return a.second;
-          //  }
-          //  return a.second;
         }
 
         // capacity
@@ -342,10 +329,11 @@ namespace ft
           return _compare;
         }
 
-        typename ft::map<value_type, key_compare, alloc>::value_compare value_comp() const
+        value_compare value_comp() const
         {
-            return (value_comp(_compare));
+            return (value_compare(_compare));
         }
+        
       private:
         tree                  _avl;
         size_type             _size;

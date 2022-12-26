@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 17:37:20 by smia              #+#    #+#             */
-/*   Updated: 2022/12/23 20:42:14 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/25 23:23:55 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,11 @@ class node
 
         node(const T& value)
         {
-            _value = _alloc.allocate(1);
-            _alloc.construct(_value, value);
             _parent = NULL;
             _left = NULL;
             _right = NULL;
+            _value = _alloc.allocate(1);
+            _alloc.construct(_value, value);
             _height = 1;
             _balance = 0;
         }
@@ -172,7 +172,7 @@ class AvlTree
         {
             if (Node->_balance > 1)
             {
-                if (_compare(value, *(Node->_left->_value)))
+                if (_compare(value.first, Node->_left->_value->first))
                     right_rotate(Node);
                 else
                 {
@@ -183,7 +183,7 @@ class AvlTree
             }
             else if (Node->_balance < -1)
             {
-                if (_compare(*(Node->_right->_value), value))
+                if (_compare(Node->_right->_value->first, value.first))
                 {
                     left_rotate(Node);
                 }
@@ -195,7 +195,7 @@ class AvlTree
             }
         }
         
-        void helper_insert(node<T, alloc>** root, const T& value, node<T, alloc>* ret)
+        void helper_insert(node<T, alloc>** root, const T& value, node<T, alloc>** ret)
         {
             // using recursion we insert new Node like BST insertion
             if (*root == NULL)
@@ -203,14 +203,14 @@ class AvlTree
                 (*root) = _alloc_node.allocate(1);
                 _alloc_node.construct((*root), value);
                 ++_size;
-                ret = (*root);
+                *ret = (*root);
             }
-            else if (_compare(*((*root)->_value),value))
+            else if (_compare((*root)->_value->first, value.first))
             {
                 helper_insert(&((*root)->_right), value);
                 (*root)->_right->_parent = (*root);
             }
-            else if (_compare(value, *((*root)->_value)))
+            else if (_compare(value->first, (*root)->_value.first))
             {
                 helper_insert(&((*root)->_left), value);
                 (*root)->_left->_parent = (*root);
@@ -260,9 +260,9 @@ class AvlTree
                 --_size;
                 return ;
             }
-            if (_compare(value, *((*root)->_value)))
+            if (_compare(value.first, (*root)->_value->first))
                 helper_delete(&((*root)->_left), value);
-            else if (_compare(*((*root)->_value), value))
+            else if (_compare((*root)->_value->first, value.first))
                 helper_delete(&((*root)->_right), value);
             else
             {
@@ -354,11 +354,11 @@ class AvlTree
         {
             if (Node == NULL)
                 return NULL;
-            if (*(Node->_value) == value)
-                return Node;
-            else if (*(Node->_value) > value)
+            if (_compare(value.first, Node->_value->first))
                 return helper_search(Node->_left, value);
-            return helper_search(Node->_right, value);
+            else if (_compare(Node->_value->first, value.first))
+                return helper_search(Node->_right, value);
+            return Node;
         }
         
         node<T, alloc>* inorder_successor(node<T, alloc>* Node)
@@ -432,9 +432,9 @@ class AvlTree
         }
         node<T, alloc>* insert(const T& value)
         {
-            node<T, alloc> ret = NULL;
+            node<T, alloc>* ret = NULL;
             helper_insert(&_root, value, &ret);
-            return &ret;
+            return ret;
         }
 
         bool search(const T& value)
