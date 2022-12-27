@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 13:32:08 by smia              #+#    #+#             */
-/*   Updated: 2022/12/25 23:04:16 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/27 00:37:54 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,7 +219,7 @@ class bidirectional_iterator
         bidirectional_iterator(): _data(NULL), _tree(NULL)
         {
         }
-        bidirectional_iterator(pointer ptr, const tree tr = NULL) : _data(ptr), _tree(tr)
+        bidirectional_iterator(pointer ptr, tree tr = NULL) : _data(ptr), _tree(tr)
         {}
         bidirectional_iterator(const bidirectional_iterator& cp) : _data(cp._data), _tree(cp._tree) {}
         bidirectional_iterator& operator=(const bidirectional_iterator& cp)
@@ -252,7 +252,10 @@ class bidirectional_iterator
         bidirectional_iterator& operator++(void)
         {
           if (_data != NULL)
-            _data = _tree->inorder_successor(*_data);
+          {
+            node<value_type, alloc>* ptr = _tree->inorder_successor(*_data);
+            _data = ptr->_value;
+          }
           return *this;
         }
 
@@ -261,25 +264,31 @@ class bidirectional_iterator
           if (_data == NULL)
             _data = _tree->max_node(_tree->get_root())->_value;
           else
-            _data = _tree->inorder_predecessor(*_data);
+          {
+              node<value_type, alloc>* ptr = _tree->inorder_predecessor(*_data);
+             _data = ptr->_value;
+          }
           return *this;
         }
 
         bidirectional_iterator& operator++(int)
         {
-          pointer tmp = _data;
+          bidirectional_iterator& tmp = *this;
           if (_data != NULL)
-            _data = _tree->inorder_successor(*_data);
+          {
+            node<value_type, alloc>* ptr = _tree->inorder_successor(*_data);
+             _data = ptr->_value;
+          }
           return tmp;
         }
 
         bidirectional_iterator& operator--(int)
         {
-          pointer tmp = _data;
+          bidirectional_iterator& tmp = *this;
           if (_data == NULL)
             _data = _tree->max_node(_tree->get_root())->_value;
           else
-            _data = _tree->inorder_predecessor(*_data);
+            _data = _tree->inorder_predecessor(*_data)->_value;
           return tmp;
         }
 			operator bidirectional_iterator<const T, cmp, alloc> () const {

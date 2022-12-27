@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 17:37:20 by smia              #+#    #+#             */
-/*   Updated: 2022/12/25 23:23:55 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/27 02:45:45 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,11 +81,11 @@ class AvlTree
     private:
         node<T, alloc>*                                             _root;
         size_t                                                       _size;
-        alloc                                                        _alloc;
         cmp                                                         _compare;
+        alloc                                                        _alloc;
         typename alloc::template rebind<node<T, alloc> >::other     _alloc_node;
 
-
+    public:
         size_t is_child(node<T, alloc>* Node)
         {
             if(Node == NULL || Node->_parent == NULL)
@@ -179,14 +179,12 @@ class AvlTree
                     left_rotate(Node->_left);
                     right_rotate(Node);
                 }
-                    
             }
             else if (Node->_balance < -1)
             {
                 if (_compare(Node->_right->_value->first, value.first))
-                {
                     left_rotate(Node);
-                }
+
                 else
                 {
                     right_rotate(Node->_right);
@@ -207,12 +205,12 @@ class AvlTree
             }
             else if (_compare((*root)->_value->first, value.first))
             {
-                helper_insert(&((*root)->_right), value);
+                helper_insert(&((*root)->_right), value, ret);
                 (*root)->_right->_parent = (*root);
             }
-            else if (_compare(value->first, (*root)->_value.first))
+            else if (_compare(value.first, (*root)->_value->first))
             {
-                helper_insert(&((*root)->_left), value);
+                helper_insert(&((*root)->_left), value, ret);
                 (*root)->_left->_parent = (*root);
             }
             else
@@ -325,7 +323,7 @@ class AvlTree
                 _size--;
             }
         }
-    public:
+
         AvlTree()
         {
             _size = 0;
@@ -347,10 +345,10 @@ class AvlTree
         
         ~AvlTree()
         {
-            Clear();
+            // Clear();
         }
         
-        node<T, alloc>* helper_search(node<T, alloc>* Node, const T& value)
+        node<T, alloc>* helper_search(node<T, alloc>* Node, const T& value) const
         {
             if (Node == NULL)
                 return NULL;
@@ -361,7 +359,7 @@ class AvlTree
             return Node;
         }
         
-        node<T, alloc>* inorder_successor(node<T, alloc>* Node)
+        node<T, alloc>* inorder_successor(node<T, alloc>* Node) const
         {
             if (Node == NULL || Node->_right == NULL)
                 return Node;
@@ -373,7 +371,7 @@ class AvlTree
             return Node;
         }
         
-        node<T, alloc>* inorder_predecessor(node<T, alloc>* Node)
+        node<T, alloc>* inorder_predecessor(node<T, alloc>* Node) const
         {
             if (Node == NULL || Node->_left == NULL)
                 return Node;
@@ -385,7 +383,7 @@ class AvlTree
             return Node;
         }
 
-        node<T, alloc>* inorder_successor(const T& value)
+        node<T, alloc>* inorder_successor(const T& value) const
         {
             node<T, alloc>* Node = helper_search(this->_root, value);
             if (Node == NULL)
@@ -393,15 +391,16 @@ class AvlTree
             if (Node->_right)
                 return min_node(Node);
             node<T, alloc>*	hold = Node->_parent;
-            while(Node != NULL && Node->_right != Node)
+            while(Node != NULL && Node->_left != Node)
             {
+                puts("sss");
                 Node = hold;
                 hold = Node->_parent;
             }
             return hold;
         }
         
-        node<T, alloc>* inorder_predecessor(const T& value)
+        node<T, alloc>* inorder_predecessor(const T& value) const
         {
             node<T, alloc>* Node = helper_search(this->_root, value);
             if (Node == NULL)
@@ -437,7 +436,7 @@ class AvlTree
             return ret;
         }
 
-        bool search(const T& value)
+        bool search(const T& value) const
         {
             if (helper_search(_root, value) != NULL)
                 return true;
@@ -449,7 +448,7 @@ class AvlTree
             helper_delete(&_root, value);
         }
         
-		node<T, alloc>* min_node(node<T, alloc>* Node) const 
+		node<T, alloc>* min_node(node<T, alloc>* Node) const  
         {
 			if (Node == NULL)
 				return NULL;
@@ -469,21 +468,13 @@ class AvlTree
 			return ptr;
 		}
         
-        void printTree(node<T, alloc> *root, std::string indent, bool last) 
+        void printTree(node<T, alloc> *root) 
         {
             if (root != NULL) 
             {
-                std::cout << indent;
-                if (last) {
-                std::cout << "R----";
-                indent += "   ";
-                } else {
-                std::cout << "L----";
-                indent += "|  ";
-                }
-                std::cout << *(root->_value) << " balance: "<<root->_balance << std::endl;
-                printTree(root->_left, indent, false);
-                printTree(root->_right, indent, true);
+                printTree(root->_left);
+                printTree(root->_right);
+                std::cout <<" key: " << root->_value->first << " value: " << root->_value->second  << " balance: " << root->_balance << std::endl;
             }
         }
         void Copy(const node<T, alloc> *Node) 
@@ -500,7 +491,6 @@ class AvlTree
             if (_root)
             {
                 clear_helper(&_root);
-                
             }
         }
 };

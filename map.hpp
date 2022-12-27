@@ -6,37 +6,34 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/21 20:34:14 by smia              #+#    #+#             */
-/*   Updated: 2022/12/25 23:29:50 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/27 02:14:48 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 #include <iostream>
 #include "iterator.hpp"
-#include "AvlTree.hpp"
 #include "pair.hpp"
 #include "lexicographical_compare.hpp"
 namespace ft
 {
-    template<class Key,class T,class Compare = std::less<Key>,class alloc = std::allocator<ft::pair< Key, T> > > 
+    template<class Key,class T,class Compare = std::less<Key>,class alloc = std::allocator<ft::pair< const Key, T> > > 
     class map
     {
-        
       public:
           typedef  Key                                                     Key_type;
           typedef  T                                                       mapped_key;
           typedef  ft::pair< const Key_type, mapped_key>                   value_type;
-          typedef  AvlTree<value_type, Compare, alloc>                    tree;
           typedef  std::size_t                                             size_type;
           typedef  std::ptrdiff_t                                          difference_type;
           typedef  Compare                                                 key_compare;
           typedef  alloc                                                   allocator_type;
           typedef  value_type&                                             reference;
           typedef  const value_type&                                       const_reference;
-          typedef  value_type*                                             pointer;
-          typedef  const value_type*                                       const_pointer;
-          typedef  typename ft::bidirectional_iterator<T, key_compare, allocator_type>           iterator;
-          typedef  typename ft::bidirectional_iterator<const T, key_compare, allocator_type>     const_iterator;
+          typedef  typename allocator_type::pointer                        pointer;
+          typedef  typename allocator_type::const_pointer                  onst_pointer;
+          typedef  typename ft::bidirectional_iterator<value_type, key_compare, allocator_type>           iterator;
+          typedef  typename ft::bidirectional_iterator<const value_type, key_compare, allocator_type>     const_iterator;
 			    typedef  typename ft::reverse_iterator<iterator>					                 reverse_iterator;
 			    typedef  typename ft::reverse_iterator<const_iterator>			               const_reverse_iterator;
 
@@ -50,19 +47,18 @@ namespace ft
                 _cmp = cmp;
               }
             public:
-              bool          result_type;
-              value_type    first;
-              value_type    secound;
+              typedef bool          result_type;
+              typedef value_type    first;
+              typedef value_type    secound;
               bool operator()( const value_type& lhs, const value_type& rhs ) const
               {
                 return _cmp((lhs.first,rhs.first));
               }
           };
-          
-              ///// constructors
+
+          ///// constructors
           explicit map (const key_compare& comp = key_compare(), const allocator_type& Alloc = allocator_type()) : _alloc(Alloc), _compare(comp)
           {
-            _avl = NULL;
             _size = 0;
           } 
           template <class InputIterator>  
@@ -70,10 +66,10 @@ namespace ft
           {
             while(first != last)
             {
-              _avl->insert(*first);
+              _avl.insert(*first);
               ++first;
             }
-            _size = _avl->get_size();
+            _size = _avl.get_size();
           }
 
           map( const map& other )
@@ -94,25 +90,30 @@ namespace ft
             _avl = other._avl;
             _size = other._size;
           }
+          
       // iterators
         iterator begin()
         {
-          
-          return (iterator(_avl.min_node(_avl.get_root())->_value, &_avl));
+          node<value_type, alloc>* ptr = _avl.min_node(_avl.get_root());
+          if (ptr == NULL)
+            return (iterator(NULL, &_avl));
+          return (iterator(ptr->_value, &_avl));
         }
         const_iterator begin() const
         {
-          return (iterator(_avl.min_node(_avl.get_root())->_value, &_avl));
+          node<value_type, alloc>* ptr = _avl.min_node(_avl.get_root());
+          if (ptr == NULL)
+            return (iterator(NULL, &_avl));
+          return (iterator(ptr->_value, &_avl));
         }
         iterator end()
         {
-          return (iterator(NULL, _avl));
+          return (iterator(NULL, &_avl));
         }
         const_iterator end() const
         { 
-          return (iterator(NULL, _avl));
+          return (iterator(NULL, &_avl));
         }
-        
         reverse_iterator rbegin()
         {
           return (reverse_iterator(end()));
@@ -133,26 +134,32 @@ namespace ft
         // modifiers
         void clear()
         {
-          _avl->Clear();
+          _avl.Clear();
           _size = 0;
         }
-
+    
         ft::pair<iterator, bool> insert( const value_type& value )
         {
             bool x;
-            node<value_type, alloc>* ptr = _avl->insert(value);
+            iterator it;
+            node<value_type, alloc>* ptr = _avl.insert(value);
             if (ptr == NULL)
+            {
+              it = iterator(NULL, &_avl);
               x = false;
+            }
             else
+            {
+              it = iterator(ptr->_value, &_avl);
               x = true;
-            iterator it(ptr->_value, _avl);
+            }
             return (ft::make_pair(it,x));
         }
 
         iterator insert( iterator pos, const value_type& value )
         {
             (void)pos;
-            return iterator(_avl->insert(value)->_value, &_avl);
+            return iterator(_avl.insert(value)->_value, &_avl);
         }
 
         template< class InputIt >
@@ -160,44 +167,44 @@ namespace ft
         {
             while(first != last)
             {
-              _avl->insert(*first);
+              _avl.insert(*first);
               ++first;
             }
-            _size = _avl->get_size();
+            _size = _avl.get_size();
         }
       
         iterator erase( iterator pos )
         {
-          _avl->Delete(*pos);
-          _size = _avl->get_size();
+          _avl.Delete(*pos);
+          _size = _avl.get_size();
         }
 
         iterator erase( iterator first, iterator last )
         {
           while(first != last)
           {
-            _avl->Delete(*first);
+            _avl.Delete(*first);
             ++first;
           }
-          _size = _avl->get_size();
+          _size = _avl.get_size();
         }
 
         size_type erase( const Key& key )
         {
           size_type size = _size;
-          _avl->Delete(ft::make_pair(key, mapped_key()));
+          _avl.Delete(ft::make_pair(key, mapped_key()));
           if (size == _size)
           {
-            _size = _avl->get_size();
+            _size = _avl.get_size();
             return 0;
           }           
-          _size = _avl->get_size();
+          _size = _avl.get_size();
           return 1;
         }
 
         void swap( map& other )
         {
-          tree tmp(_avl);
+          AvlTree<value_type, Compare, alloc> tmp(_avl);
           key_compare   cmp = _compare;
 
           _compare = other._compare;
@@ -210,7 +217,7 @@ namespace ft
         // element access 
         T& at( const Key& key )
         {
-           node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+           node<value_type, alloc>* ptr = _avl.helper_search(_avl.get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
            if (ptr != NULL)
             return ptr->_value->second;
            throw std::out_of_range("out of range\n");
@@ -218,7 +225,7 @@ namespace ft
 
         const T& at( const Key& key ) const
         {
-           node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+           node<value_type, alloc>* ptr = _avl.helper_search(_avl.get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
            value_type a = ptr->_value;
            if (ptr != NULL)
               return a.second;
@@ -227,14 +234,14 @@ namespace ft
 
         T& operator[]( const Key& key )
         {
-           node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+           node<value_type, alloc>* ptr = _avl.helper_search(_avl.get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
            value_type a = ptr->_value;
            if (!ptr)
            {
 
-              ptr = _avl->insert(*(ptr->_value));
+              ptr = _avl.insert(*(ptr->_value));
               a = ptr->_value;
-              _size = _avl->get_size();
+              _size = _avl.get_size();
               return a.second;
            }
            return a.second;
@@ -256,14 +263,14 @@ namespace ft
         // Lookup
         size_type count( const Key& key ) const
         {
-           node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+           node<value_type, alloc>* ptr = _avl.helper_search(_avl.get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
            if (ptr != NULL)
               return 1;
            return 0;
         }
         iterator find( const Key& key )
         {
-           node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+           node<value_type, alloc>* ptr = _avl.helper_search(_avl.get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
            if (ptr == NULL)
               return (end());
            value_type a = ptr->_value;
@@ -271,7 +278,7 @@ namespace ft
         }
         const_iterator find( const Key& key ) const
         {
-           node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+           node<value_type, alloc>* ptr = _avl.helper_search(_avl.get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
            if (ptr == NULL)
               return (end());
            value_type a = ptr->_value;
@@ -279,37 +286,37 @@ namespace ft
         }
         iterator lower_bound( const Key& key )
         {
-           node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+           node<value_type, alloc>* ptr = _avl.helper_search(_avl.get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
            if (ptr == NULL)
               return (end());
-           ptr = _avl->inorder_predecessor(*(ptr->_value));
+           ptr = _avl.inorder_predecessor(*(ptr->_value));
           return (iterator(ptr->_value, _avl));
         }
 
         const_iterator lower_bound( const Key& key ) const
         {
-           node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+           node<value_type, alloc>* ptr = _avl.helper_search(_avl.get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
            if (ptr == NULL)
               return (end());
-           ptr = _avl->inorder_predecessor(*(ptr->_value));
+           ptr = _avl.inorder_predecessor(*(ptr->_value));
           return (const_iterator(ptr->_value, _avl));
         }
 
         iterator upper_bound( const Key& key )
         {
-            node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+            node<value_type, alloc>* ptr = _avl.helper_search(_avl.get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
            if (ptr == NULL)
               return (end());
-            ptr = _avl->inorder_successor(*(ptr->_value));
+            ptr = _avl.inorder_successor(*(ptr->_value));
           return (iterator(ptr->_value, _avl));
         }
 
         const_iterator upper_bound( const Key& key ) const
         {
-            node<value_type, alloc>* ptr = _avl->helper_search(_avl->get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
+            node<value_type, alloc>* ptr = _avl.helper_search(_avl.get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
            if (ptr == NULL)
               return (end());
-            ptr = _avl->inorder_successor(*(ptr->_value));
+            ptr = _avl.inorder_successor(*(ptr->_value));
           return (const_iterator(ptr->_value, _avl));
         }
 
@@ -334,12 +341,15 @@ namespace ft
             return (value_compare(_compare));
         }
         
+        void print()
+        {
+          _avl.printTree(_avl.get_root());
+        }
       private:
-        tree                  _avl;
+        AvlTree<value_type, Compare, alloc>                  _avl;
         size_type             _size;
         allocator_type        _alloc;
         key_compare           _compare;
-          
     };
 
     template< class Key, class T, class Compare, class Alloc >
