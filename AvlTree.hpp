@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 17:37:20 by smia              #+#    #+#             */
-/*   Updated: 2022/12/29 05:13:04 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/29 06:13:49 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,12 +131,6 @@ class AvlTree
             }
             else
                 _root = ptr;
-            // Node->_parent = ptr;
-            // ptr->_parent = hold;
-            // ptr->_left = Node;
-            // Node->_right->_parent = Node;
-            // Node->_right = tmp;
-
             Node->_right = tmp;
             if (Node->_right)
                 Node->_right->_parent = Node;
@@ -371,7 +365,6 @@ class AvlTree
                 return helper_search(Node->_right, value);
             else
                 return Node;    
-
         }
         
         node<T, alloc>* inorder_successor(node<T, alloc>* Node) const
@@ -379,14 +372,6 @@ class AvlTree
             if (Node != NULL)
                 return (inorder_successor(*(Node->_value)));
             return NULL;
-            // if (Node == NULL || Node->_right == NULL)
-            //     return Node;
-            // Node = Node->_right;
-            // while(Node != NULL && Node->_left != NULL)
-            // {
-            //     Node = Node->_left;
-            // }
-            // return Node;
         }
         
         node<T, alloc>* inorder_predecessor(node<T, alloc>* Node) const
@@ -394,14 +379,6 @@ class AvlTree
             if (Node != NULL)
                 return (inorder_predecessor(*(Node->_value)));
             return NULL;
-            // if (Node == NULL || Node->_left == NULL)
-            //     return Node;
-            // Node = Node->_left;
-            // while(Node != NULL && Node->_right != NULL)
-            // {
-            //     Node = Node->_right;
-            // }
-            // return Node;
         }
 
         node<T, alloc>* inorder_successor(const T& value) const

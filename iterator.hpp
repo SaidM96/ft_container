@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 13:32:08 by smia              #+#    #+#             */
-/*   Updated: 2022/12/29 05:05:34 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/29 09:36:57 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -292,10 +292,6 @@ class bidirectional_iterator
           --(*this);
           return tmp;
         }
-			// operator bidirectional_iterator<const T, cmp, alloc> () const {
-			// 	return bidirectional_iterator<const T, cmp, alloc>(_data,reinterpret_cast<const AvlTree<const value_type, cmp, alloc>*>(_tree));
-			// }
-
     private:
       T*                      _data;
       tree                    _tree;

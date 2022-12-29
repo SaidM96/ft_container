@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/21 20:34:14 by smia              #+#    #+#             */
-/*   Updated: 2022/12/29 05:07:50 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/29 08:09:37 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -248,14 +248,6 @@ namespace ft
               return (Node->_value->second);
             }
             return Node->_value->second;
-          //  node<value_type, alloc>* ptr = _avl.helper_search(_avl.get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
-          //  if (!ptr)
-          //  {
-          //     ptr = _avl.insert(*(ptr->_value));
-          //     _size = _avl.get_size();
-          //     return ptr->_value->second;
-          //  }
-          //  return ptr->_value->second;
         }
 
         // capacity
@@ -399,6 +391,7 @@ namespace ft
         return true;
       return false;
     }
+    
     template< class Key, class T, class Compare, class Alloc >
     bool operator!=( const ft::map<Key,T,Compare,Alloc>& lhs,const ft::map<Key,T,Compare,Alloc>& rhs )
     {

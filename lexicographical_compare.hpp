@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/18 01:41:33 by smia              #+#    #+#             */
-/*   Updated: 2022/11/18 01:55:57 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/29 05:58:13 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ bool lexicographical_compare(InputIt1 first1, InputIt1 last1,
         if (comp(*first2, *first1))
             return false;
     }
- 
     return (first1 == last1) && (first2 != last2);
-}  
+}
 };
