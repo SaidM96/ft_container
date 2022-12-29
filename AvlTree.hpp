@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 17:37:20 by smia              #+#    #+#             */
-/*   Updated: 2022/12/29 04:44:01 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/29 05:13:04 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -285,6 +285,7 @@ class AvlTree
                     _alloc_node.destroy((*root));
                     _alloc_node.deallocate((*root), 1);
                     (*root) = NULL;
+                    _size--;
                 }
                 else if ((*root)->_left != NULL  && (*root)->_right != NULL) // two child
                 {
@@ -308,6 +309,7 @@ class AvlTree
                     _alloc_node.destroy(ptr);
                     _alloc_node.deallocate(ptr, 1);
                     ptr = NULL;
+                    _size--;
                 }
             }
             if ((*root) == NULL)

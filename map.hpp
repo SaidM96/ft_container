@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/21 20:34:14 by smia              #+#    #+#             */
-/*   Updated: 2022/12/29 05:00:21 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/29 05:07:50 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -245,7 +245,7 @@ namespace ft
             if (!Node) {
               Node = _avl.insert(p);
               _size = _avl.get_size();
-              return (_avl.helper_search(_avl.get_root(), p)->_value->second);
+              return (Node->_value->second);
             }
             return Node->_value->second;
           //  node<value_type, alloc>* ptr = _avl.helper_search(_avl.get_root(), ft::make_pair<Key_type, mapped_key>(key, mapped_key()));
