@@ -51,7 +51,6 @@ int main() {
             for (std::map<std::string, int>::reverse_iterator it = m3.rbegin() ; it != m3.rend(); it++)
                 std::cout << "\n" << it->first << "\t" << it->second;
             std::cout << std::endl;
-
         }
         catch(const std::exception& e)
         {
@@ -849,3 +848,30 @@ int main() {
     }
 
 }
+
+
+
+			// T& at( const Key& key ) {
+			// 	Node<value_type, Allocator>*	node = _avl.search(_avl.root, ft::make_pair(key, mapped_type()));
+			// 	if (node)
+			// 		return node->data->second;
+			// 	else
+			// 		throw std::out_of_range("Element not found");
+			// }
+			// const T& at( const Key& key ) const {
+			// 	Node<value_type, Allocator>*	node = _avl.search(_avl.root, ft::make_pair(key, mapped_type()));
+			// 	if (node)
+			// 		return node->data->second;
+			// 	else
+			// 		throw std::out_of_range("Element not found");
+			// }
+			// T& operator[]( const Key& key ) {
+			// 	value_type	p = ft::make_pair<const key_type, mapped_type>(key, mapped_type());
+			// 	Node<value_type, Allocator>* node = _avl.search(_avl.root, p);
+			// 	if (!node) {
+			// 		node = _avl.insert(p);
+			// 		_size++;
+			// 		return (_avl.search(_avl.root, p))->data->second;
+			// 	}
+			// 	return node->data->second;
+			// }

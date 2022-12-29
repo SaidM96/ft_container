@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/11 22:42:12 by smia              #+#    #+#             */
-/*   Updated: 2022/12/21 23:00:01 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/27 21:41:12 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,12 @@ namespace ft {
 		pair() : first(first_type()), second(second_type()) {}
 		template<class U, class V> pair (const pair<U,V>& pr) : first(pr.first), second(pr.second) {}
 		pair (const first_type& a, const second_type& b) : first(a) , second(b) {}
-		pair& operator= (const pair& pr) {first = pr.first; second = pr.second; return *this;}
+		pair& operator= (const pair& pr) 
+		{
+			first = pr.first;
+		 	second = pr.second;
+			return *this;
+		}
 	};
 	template< class T1, class T2 > ft::pair<T1, T2> make_pair( T1 t, T2 u ) {
 		return ft::pair<T1 , T2>(t, u);

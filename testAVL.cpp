@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/20 00:01:55 by smia              #+#    #+#             */
-/*   Updated: 2022/12/23 19:50:05 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/27 19:27:19 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int main()
         tree.insert(108);
         tree.insert(99);
         tree.insert(81);
-        tree.printTree(tree.get_root(), str, true);
+        tree.printTree(tree.get_root());
         b = tree;
 
     

@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 17:37:20 by smia              #+#    #+#             */
-/*   Updated: 2022/12/27 02:45:45 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/29 04:44:01 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ class node
             if (_value)
             {
                 _alloc.destroy(_value);
-                _alloc.deallocat(_value, 1);
+                _alloc.deallocate(_value, 1);
             }
             _value = _alloc.allocate(1);
             _alloc.construct(_value, *(x._value));
@@ -121,11 +121,7 @@ class AvlTree
             node<T, alloc>* hold = (Node)->_parent;
             node<T, alloc>* ptr = (Node)->_right;
             node<T, alloc>* tmp = ptr->_left;
-
-            Node->_parent = ptr;
-            ptr->_left = Node;
-            Node->_right = tmp;
-            ptr->_parent = hold;
+            
             if (Node != _root)
             {
                 if(is_child(Node) == 1)
@@ -135,6 +131,19 @@ class AvlTree
             }
             else
                 _root = ptr;
+            // Node->_parent = ptr;
+            // ptr->_parent = hold;
+            // ptr->_left = Node;
+            // Node->_right->_parent = Node;
+            // Node->_right = tmp;
+
+            Node->_right = tmp;
+            if (Node->_right)
+                Node->_right->_parent = Node;
+            ptr->_parent = hold;
+            Node->_parent = ptr;
+            ptr->_left = Node;
+            
             (Node)->_height = max(get_height((Node)->_right), get_height((Node)->_left)) + 1;
             ptr->_height = max(get_height(ptr->_right), get_height(ptr->_left)) + 1;
 
@@ -148,10 +157,6 @@ class AvlTree
             node<T, alloc>* ptr = Node->_left;
             node<T, alloc>* tmp = ptr->_right;
 
-            Node->_parent = ptr;
-            ptr->_right = Node;
-            Node->_left = tmp;
-            ptr->_parent = hold;
             if (Node != _root)
             {
                 if(is_child(Node) == 1)
@@ -161,13 +166,21 @@ class AvlTree
             }
             else
                 _root = ptr;
+
+            Node->_left = tmp;
+            if (Node->_left)
+                Node->_left->_parent = Node;
+            ptr->_parent = hold;
+            Node->_parent = ptr;
+            ptr->_right = Node;
+
             (Node)->_height = max(get_height((Node)->_right), get_height((Node)->_left)) + 1;
             ptr->_height = max(get_height(ptr->_right), get_height(ptr->_left)) + 1;
 
             (Node)->_balance = get_balance(Node);
             ptr->_balance = get_balance(ptr);
         }
-    
+
         void rebalance(node<T, alloc>* Node, const T& value)
         {
             if (Node->_balance > 1)
@@ -183,8 +196,9 @@ class AvlTree
             else if (Node->_balance < -1)
             {
                 if (_compare(Node->_right->_value->first, value.first))
+                {
                     left_rotate(Node);
-
+                }
                 else
                 {
                     right_rotate(Node->_right);
@@ -192,7 +206,7 @@ class AvlTree
                 }
             }
         }
-        
+
         void helper_insert(node<T, alloc>** root, const T& value, node<T, alloc>** ret)
         {
             // using recursion we insert new Node like BST insertion
@@ -215,6 +229,8 @@ class AvlTree
             }
             else
                 return ;
+
+
             // update height factor 
             (*root)->_height = max(get_height((*root)->_left), get_height((*root)->_right)) + 1;      
             (*root)->_balance = get_balance((*root));
@@ -254,10 +270,7 @@ class AvlTree
         void helper_delete(node<T, alloc>** root, const T& value)
         {
             if ((*root) == NULL)
-            {
-                --_size;
                 return ;
-            }
             if (_compare(value.first, (*root)->_value->first))
                 helper_delete(&((*root)->_left), value);
             else if (_compare((*root)->_value->first, value.first))
@@ -275,7 +288,7 @@ class AvlTree
                 }
                 else if ((*root)->_left != NULL  && (*root)->_right != NULL) // two child
                 {
-                    node<T, alloc>* ptr = inorder_successor((*root)->_right); // now ptr point to a node with a minimum value in the right subtree
+                    node<T, alloc>* ptr = min_node((*root)->_right); // now ptr point to a node with a minimum value in the right subtree
                     _alloc.construct((*root)->_value, *(ptr->_value));
                     helper_delete(&((*root)->_right), *(ptr->_value));
                 }
@@ -309,18 +322,17 @@ class AvlTree
         {
             if ((*root) != NULL) 
             {
-                clear_helper(&(*root)->_left);
-                clear_helper(&(*root)->_right);
+                clear_helper(&((*root)->_left));
                 if ((*root)->_value != NULL)
                 {
                     _alloc.destroy((*root)->_value);
                     _alloc.deallocate((*root)->_value, 1);
                     (*root)->_value = NULL;
                 }
+                clear_helper(&((*root)->_right));
                 _alloc_node.destroy((*root));
                 _alloc_node.deallocate((*root), 1);
                 (*root) = NULL;
-                _size--;
             }
         }
 
@@ -345,55 +357,61 @@ class AvlTree
         
         ~AvlTree()
         {
-            // Clear();
         }
         
         node<T, alloc>* helper_search(node<T, alloc>* Node, const T& value) const
         {
             if (Node == NULL)
                 return NULL;
-            if (_compare(value.first, Node->_value->first))
+            else if (_compare(value.first, Node->_value->first))
                 return helper_search(Node->_left, value);
-            else if (_compare(Node->_value->first, value.first))
+            else if (_compare(Node->_value->first ,value.first))
                 return helper_search(Node->_right, value);
-            return Node;
+            else
+                return Node;    
+
         }
         
         node<T, alloc>* inorder_successor(node<T, alloc>* Node) const
         {
-            if (Node == NULL || Node->_right == NULL)
-                return Node;
+            if (Node != NULL)
+                return (inorder_successor(*(Node->_value)));
+            return NULL;
+            // if (Node == NULL || Node->_right == NULL)
+            //     return Node;
             // Node = Node->_right;
-            while(Node != NULL && Node->_left != NULL)
-            {
-                Node = Node->_left;
-            }
-            return Node;
+            // while(Node != NULL && Node->_left != NULL)
+            // {
+            //     Node = Node->_left;
+            // }
+            // return Node;
         }
         
         node<T, alloc>* inorder_predecessor(node<T, alloc>* Node) const
         {
-            if (Node == NULL || Node->_left == NULL)
-                return Node;
-            Node = Node->_left;
-            while(Node != NULL && Node->_right != NULL)
-            {
-                Node = Node->_right;
-            }
-            return Node;
+            if (Node != NULL)
+                return (inorder_predecessor(*(Node->_value)));
+            return NULL;
+            // if (Node == NULL || Node->_left == NULL)
+            //     return Node;
+            // Node = Node->_left;
+            // while(Node != NULL && Node->_right != NULL)
+            // {
+            //     Node = Node->_right;
+            // }
+            // return Node;
         }
 
         node<T, alloc>* inorder_successor(const T& value) const
         {
             node<T, alloc>* Node = helper_search(this->_root, value);
             if (Node == NULL)
-                return Node;
-            if (Node->_right)
-                return min_node(Node);
+                return NULL;
+            if (Node->_right != NULL)
+                return min_node(Node->_right);
             node<T, alloc>*	hold = Node->_parent;
-            while(Node != NULL && Node->_left != Node)
+            while(hold != NULL && hold->_left != Node)
             {
-                puts("sss");
                 Node = hold;
                 hold = Node->_parent;
             }
@@ -406,9 +424,9 @@ class AvlTree
             if (Node == NULL)
                 return Node;
             if (Node->_left)
-                return max_node(Node);
+                return max_node(Node->_left);
             node<T, alloc>*	hold = Node->_parent;
-            while(Node != NULL && Node->_right != Node)
+            while(hold != NULL && hold->_right != Node)
             {
                 Node = hold;
                 hold = Node->_parent;
@@ -474,6 +492,8 @@ class AvlTree
             {
                 printTree(root->_left);
                 printTree(root->_right);
+                if (root == _root)
+                    std::cout << "this is root :  ";
                 std::cout <<" key: " << root->_value->first << " value: " << root->_value->second  << " balance: " << root->_balance << std::endl;
             }
         }
@@ -481,17 +501,26 @@ class AvlTree
         {
 			if (Node == NULL)
 				return ;
+			Copy(Node->_left);
 			if (Node->_value)
 				insert(*(Node->_value));
 			Copy(Node->_right);
-			Copy(Node->_left);
 		}
+
+        void swap(AvlTree& tree)
+        {
+            node<T, alloc>* tmp = _root;
+            _root = tree._root;
+            tree._root = tmp;
+
+            size_t tmpSize = _size;
+            _size = tree._size;
+            tree._size = tmpSize;
+        }
         void Clear()
         {
-            if (_root)
-            {
-                clear_helper(&_root);
-            }
+            clear_helper(&_root);
+            _size = 0;
         }
 };
 
