@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 09:06:48 by smia              #+#    #+#             */
-/*   Updated: 2022/12/19 23:00:56 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/30 05:05:35 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,6 +198,7 @@ class vector
 				for (size_type i = 0; i < count; i++)
 					push_back(value);
 			}
+
 			template<class InputIt>
 			void assign(InputIt first, InputIt last , typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type* = NULL)
 			{
@@ -307,7 +308,6 @@ class vector
 			
 			iterator erase( iterator first, iterator last )
 			{
-				size_type start = static_cast<size_type>(std::distance(begin(), first));
 				size_type lenght = static_cast<size_type>(std::distance(first, last));
 				if (!lenght)
 					return end();
@@ -329,7 +329,6 @@ class vector
 				}
 				_size -= lenght;
 				return first;
-				
 			}
 
 			void resize(size_type count, T value = T())
@@ -350,6 +349,7 @@ class vector
 					while(_size > count)
 						pop_back();
 			}
+
 			void swap( vector& other )
 			{
 				vector tmp(*this);
@@ -364,12 +364,14 @@ class vector
 					throw std::out_of_range("vector");
 				return _data[pos];
 			}
+
 			const_reference at( size_type pos ) const
 			{
 				if (pos < 0 || pos >= _size)
 					throw std::out_of_range("vector");
 				return _data[pos];
 			}
+
 			reference operator[]( size_type pos ){return _data[pos];}
 			const_reference operator[]( size_type pos ) const {return _data[pos];}
 			reference front() {return at(0);}
@@ -419,10 +421,12 @@ class vector
 		lhs = rhs;
 		rhs = tmp;
 	}
+
 	template< class T, class Alloc > bool operator<=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs ) 
 	{
 		return ((lhs == rhs) || (lhs < rhs));
 	}
+
 	template< class T, class Alloc > bool operator>=( const ft::vector<T,Alloc>& lhs,const ft::vector<T,Alloc>& rhs )
 	{
 		return ((lhs == rhs) || (lhs > rhs));

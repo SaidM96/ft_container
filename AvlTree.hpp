@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 17:37:20 by smia              #+#    #+#             */
-/*   Updated: 2022/12/29 06:13:49 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/29 22:56:42 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,13 @@ template <typename T, class alloc = std::allocator<T> >
 class node
 {
     public:
-        T*    _value;
-        alloc _alloc;
-        node* _parent;
-        node* _right;
-        node* _left;
-        size_t _height;
-        int _balance;
+        T*      _value;
+        alloc   _alloc;
+        node*   _parent;
+        node*   _right;
+        node*   _left;
+        size_t  _height;
+        int     _balance;
         
         node()
         {
@@ -224,23 +224,19 @@ class AvlTree
             else
                 return ;
 
-
             // update height factor 
             (*root)->_height = max(get_height((*root)->_left), get_height((*root)->_right)) + 1;      
             (*root)->_balance = get_balance((*root));
             // rebalance
             rebalance(*root, value);
         }
-        
-        
+
         void rebalance_delete(node<T, alloc>* Node)
         {
             if (Node->_balance > 1)
             {
                 if (Node->_left->_balance >= 0)
-                {
                     right_rotate(Node);
-                }
                 else
                 {
                     left_rotate(Node->_left);
@@ -250,9 +246,7 @@ class AvlTree
             if (Node->_balance < -1)
             {
                 if (Node->_right->_balance <= 0)
-                {
                     left_rotate(Node);
-                }
                 else
                 {
                     right_rotate(Node->_right);
@@ -396,7 +390,7 @@ class AvlTree
             }
             return hold;
         }
-        
+
         node<T, alloc>* inorder_predecessor(const T& value) const
         {
             node<T, alloc>* Node = helper_search(this->_root, value);
@@ -412,7 +406,7 @@ class AvlTree
             }
             return hold;
         }
-        
+
         size_t max_size(void) const
         {
             return (_alloc_node.max_size());
@@ -422,10 +416,12 @@ class AvlTree
         {
             return (this->_root);
         }
+        
         size_t get_size(void) const
         {
             return _size;
         }
+        
         node<T, alloc>* insert(const T& value)
         {
             node<T, alloc>* ret = NULL;
@@ -476,6 +472,7 @@ class AvlTree
                 std::cout <<" key: " << root->_value->first << " value: " << root->_value->second  << " balance: " << root->_balance << std::endl;
             }
         }
+        
         void Copy(const node<T, alloc> *Node) 
         {
 			if (Node == NULL)
@@ -496,6 +493,7 @@ class AvlTree
             _size = tree._size;
             tree._size = tmpSize;
         }
+
         void Clear()
         {
             clear_helper(&_root);

@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 13:32:08 by smia              #+#    #+#             */
-/*   Updated: 2022/12/29 09:36:57 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/30 05:48:29 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,18 +30,18 @@ namespace ft
     };
     template <class T> class iterator_traits<T *> {
       public:
-        typedef std::ptrdiff_t					diffrence_type;
-        typedef T								value_type;
-        typedef T*								pointer;
-        typedef T&								reference;
+        typedef std::ptrdiff_t					          diffrence_type;
+        typedef T								                  value_type;
+        typedef T*								                pointer;
+        typedef T&								                reference;
         typedef std::random_access_iterator_tag	  iterator_category;
     };
     template <class T> class iterator_traits<const T *> {
       public:
-        typedef std::ptrdiff_t			diffrence_type;
-        typedef T								    value_type;
-        typedef const T*						pointer;
-        typedef const T&						reference;
+        typedef std::ptrdiff_t			        diffrence_type;
+        typedef T								            value_type;
+        typedef const T*						        pointer;
+        typedef const T&						  reference;
         typedef std::random_access_iterator_tag	iterator_category;
     };
 
@@ -292,6 +292,10 @@ class bidirectional_iterator
           --(*this);
           return tmp;
         }
+      	operator bidirectional_iterator<const T, cmp, alloc> () const 
+        {
+				    return bidirectional_iterator<const T, cmp, alloc>(_data, reinterpret_cast<const AvlTree<const value_type, cmp, alloc>*>(_tree));
+			  }
     private:
       T*                      _data;
       tree                    _tree;

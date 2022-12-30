@@ -6,7 +6,7 @@
 /*   By: smia <smia@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/21 20:34:14 by smia              #+#    #+#             */
-/*   Updated: 2022/12/29 08:09:37 by smia             ###   ########.fr       */
+/*   Updated: 2022/12/30 05:56:43 by smia             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ namespace ft
           typedef  value_type&                                             reference;
           typedef  const value_type&                                       const_reference;
           typedef  typename allocator_type::pointer                        pointer;
-          typedef  typename allocator_type::const_pointer                  onst_pointer;
+          typedef  typename allocator_type::const_pointer                  const_pointer;
           typedef  typename ft::bidirectional_iterator<value_type, key_compare, allocator_type>           iterator;
           typedef  typename ft::bidirectional_iterator<const value_type, key_compare, allocator_type>     const_iterator;
 			    typedef  typename ft::reverse_iterator<iterator>					                 reverse_iterator;
@@ -109,8 +109,8 @@ namespace ft
         {
           node<value_type, alloc>* ptr = _avl.min_node(_avl.get_root());
           if (ptr == NULL)
-            return (const_iterator(NULL, &_avl));
-          return (const_iterator(ptr->_value, &_avl));
+            return (iterator(NULL, &_avl));
+          return (iterator(ptr->_value, &_avl));
         }
         iterator end()
         {
@@ -118,7 +118,7 @@ namespace ft
         }
         const_iterator end() const
         { 
-          return (const_iterator(NULL, &_avl));
+          return (iterator(NULL, &_avl));
         }
         reverse_iterator rbegin()
         {
@@ -368,17 +368,17 @@ namespace ft
         key_compare           _compare;
     };
 
-    template< class Key, class T, class Compare, class Alloc >
-    void swap( ft::map<Key,T,Compare,Alloc>& lhs, ft::map<Key,T,Compare,Alloc>& rhs )
+    template< class Key, class T, class Compare, class alloc >
+    void swap( ft::map<Key,T,Compare,alloc>& lhs, ft::map<Key,T,Compare,alloc>& rhs )
     {
           lhs.swap(rhs);
     }
 
-    template< class Key, class T, class Compare, class Alloc >
-    bool operator==( const typename ft::map<Key,T,Compare,Alloc>& lhs,const typename  ft::map<Key,T,Compare,Alloc>& rhs )
+    template< class Key, class T, class Compare, class alloc >
+    bool operator==( const typename ft::map<Key,T,Compare,alloc>& lhs,const typename  ft::map<Key,T,Compare,alloc>& rhs )
     {
-      typename ft::map<Key, T, Compare, Alloc>::const_iterator it = lhs.begin();
-      typename  ft::map<Key, T, Compare, Alloc>::const_iterator itt = rhs.begin();
+      typename ft::map<Key, T, Compare, alloc>::const_iterator it = lhs.begin();
+      typename  ft::map<Key, T, Compare, alloc>::const_iterator itt = rhs.begin();
 
       while(it != lhs.end() && itt != rhs.end())
       {
@@ -392,33 +392,33 @@ namespace ft
       return false;
     }
     
-    template< class Key, class T, class Compare, class Alloc >
-    bool operator!=( const ft::map<Key,T,Compare,Alloc>& lhs,const ft::map<Key,T,Compare,Alloc>& rhs )
+    template< class Key, class T, class  cmp, class alloc >
+    bool operator!=( const  ft::map<Key,T, cmp,alloc>& lhs,const  ft::map<Key,T, cmp,alloc>& rhs )
     {
       return (!(lhs == rhs));
     }
 
-    template< class Key, class T, class Compare, class Alloc >
-    bool operator>( const ft::map<Key,T,Compare,Alloc>& lhs,const ft::map<Key,T,Compare,Alloc>& rhs )
+    template< class Key, class T, class  cmp, class alloc >
+    bool operator>( const  ft::map<Key,T, cmp,alloc>& lhs,const  ft::map<Key,T, cmp,alloc>& rhs )
     {
         return (ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
     }
 
-    template< class Key, class T, class Compare, class Alloc >
-    bool operator<( const ft::map<Key,T,Compare,Alloc>& lhs,const ft::map<Key,T,Compare,Alloc>& rhs )
+    template< class Key, class T, class cmp, class alloc >
+    bool operator<( const  ft::map<Key,T,cmp,alloc>& lhs,const  ft::map<Key,T,cmp,alloc>& rhs )
     {
         return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
     }
 
-    template< class Key, class T, class Compare, class Alloc >
-    bool operator<=( const ft::map<Key,T,Compare,Alloc>& lhs,const ft::map<Key,T,Compare,Alloc>& rhs )
+    template< class Key, class T, class cmp, class alloc >
+    bool operator<=( const  ft::map<Key,T,cmp,alloc>& lhs,const  ft::map<Key,T,cmp,alloc>& rhs )
     {
-        return (!(lhs > rhs));
+        return ((lhs == rhs) || (lhs < rhs));
     }
 
-    template< class Key, class T, class Compare, class Alloc >
-    bool operator>=( const ft::map<Key,T,Compare,Alloc>& lhs,const ft::map<Key,T,Compare,Alloc>& rhs )
+    template< class Key, class T, class cmp, class alloc >
+    bool operator>=( const  ft::map<Key,T,cmp,alloc>& lhs,const  ft::map<Key,T,cmp,alloc>& rhs )
     {
-        return (!(lhs < rhs));
+        return ((lhs == rhs) ||  (lhs > rhs));
     }
 };
